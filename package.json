@@ -1,0 +1,18 @@
+{
+  "name": "culture-collective",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Culture Collective: a 3D walk-through digital museum of Philippine popular culture (MO-HUM080, H1102, Group 2).",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "build:data": "python scripts/build-data.py"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
