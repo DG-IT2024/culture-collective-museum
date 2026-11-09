@@ -92,7 +92,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - `build-data.py`: read Phase 3 rows 9–13 for all 3 eras, split title/year/body, apply short wall titles, copy images from `past/`, `present/` and `future/`, and pull credits (Tacloban: "Photo courtesy RMN Tacloban, via Inquirer.net"; 2030: from `future/SOURCES-AND-CREDITS.md`).
 - **Done when:** `data.js` lists 45 exhibits, each with an image, and `npm start` serves a blank page locally.
 
-## Phase 1 · Walkable museum core (≈1.5 h) · must-have
+## Phase 1 · Walkable museum core (≈1.5 h) · must-have ✅ done
 - Loop geometry for the 6 spaces (Lobby, 3 era rooms, Final, corridor): walls, floors, ceilings and doorways, with collision.
 - Controls: WASD/mouse/pointer lock, plus phone joystick, drag-look and tap.
 - All 45 exhibits on their walls (left/right/back), with wall labels and click-to-open cards (prev/next within the room).

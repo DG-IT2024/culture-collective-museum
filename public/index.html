@@ -2,22 +2,76 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>Culture Collective</title>
-<style>
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #1c1916; color: #f3ead8; font: 16px/1.5 Georgia, serif; }
-  p { color: #c8a96a; font-family: system-ui, sans-serif; font-size: 14px; }
-</style>
+<meta name="description" content="Culture Collective: a walk-through digital museum of Philippine popular culture, 2000–2010, today and 2030.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>Culture Collective</h1>
-    <p id="status">Phase 0 placeholder. The 3D museum is built in Phase 1.</p>
-  </main>
-  <script src="data.js"></script>
-  <script>
-    const d = window.CC_DATA;
-    if (d) document.getElementById('status').textContent += ` Data loaded: ${d.rooms.reduce((n, r) => n + r.aspects.reduce((m, a) => m + a.items.length, 0), 0)} exhibits.`;
-  </script>
+<canvas id="scene"></canvas>
+
+<div id="hud" class="hidden">
+  <div id="room"><b>Lobby</b><span>Culture Collective</span></div>
+  <div id="crosshair"></div>
+  <div id="hint" class="hidden"></div>
+  <div id="toast"><div class="t1"></div><div class="t2"></div></div>
+  <div id="tools"><button id="btn-map" type="button">Map</button></div>
+</div>
+<div id="joy" class="hidden"><i></i></div>
+<div id="lookhint" class="hidden">Drag to look · Tap an artwork</div>
+
+<div id="start" class="overlay">
+  <div class="panel start">
+    <div class="logo" aria-hidden="true"><span>EST. 2026</span><b>Culture<br>Collective</b><span>THEN · NOW · NEXT</span></div>
+    <h1 class="sr-only">Culture Collective</h1>
+    <button class="btn" id="btn-enter" type="button" disabled>Enter</button>
+    <p id="loading" class="muted">Loading exhibits…</p>
+    <div class="controls" id="controls-desktop"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · mouse look · <kbd>E</kbd> open exhibit · <kbd>M</kbd> map</div>
+    <div class="controls hidden" id="controls-touch">Left joystick to walk · drag to look · tap an exhibit</div>
+  </div>
+</div>
+
+<div id="pause" class="overlay hidden">
+  <div class="panel">
+    <p class="kicker">Museum map</p>
+    <h2>Where to?</h2>
+    <div class="maplist" id="maplist"></div>
+    <div class="row"><button class="btn" id="btn-resume" type="button">Resume</button></div>
+  </div>
+</div>
+
+<div id="cardwrap" class="overlay hidden">
+  <div class="panel card" role="dialog" aria-modal="true" aria-labelledby="card-title">
+    <div class="media"><img id="card-img" alt=""></div>
+    <div class="body">
+      <p class="kicker" id="card-kicker"></p>
+      <h2 id="card-title"></h2>
+      <p class="meta" id="card-meta"></p>
+      <div class="text" id="card-text"></div>
+      <p class="credit" id="card-credit"></p>
+      <div class="row">
+        <button class="btn ghost" id="card-prev" type="button">← Previous</button>
+        <button class="btn ghost" id="card-next" type="button">Next →</button>
+        <button class="btn" id="card-close" type="button">Back to the museum</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+<script type="module">
+  // Canvas labels need the web fonts loaded before they are drawn.
+  try {
+    await Promise.race([
+      Promise.all(['900 40px "Playfair Display"', '700 40px "Playfair Display"', '400 20px Inter', '600 20px Inter', '700 20px Inter'].map(f => document.fonts.load(f))),
+      new Promise(r => setTimeout(r, 2500)),
+    ]);
+  } catch {}
+  await import('./js/main.js');
+</script>
 </body>
 </html>
