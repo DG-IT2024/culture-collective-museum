@@ -2,7 +2,7 @@
 // treatment of the Affect walls, time-warp doorways, Freedom Wall shells, the final room,
 // the credits corridor and DIWA (the 2030 smart-glasses guide).
 import * as THREE from 'three';
-import { H, DOOR_H, DOORS, SLOTS, wallPoint, roomById, obstacles, blocks } from './world.js';
+import { H, DOOR_H, DOORS, SLOTS, WALL_T, wallPoint, roomById, obstacles, blocks } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
 
 const rand = seed => { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); };
@@ -64,7 +64,7 @@ const SURF = {
   }),
   present: () => ({
     wall: new THREE.MeshLambertMaterial({ map: repeatTex(256, 256, (c, w, h) => {
-      c.fillStyle = '#f6f5f2'; c.fillRect(0, 0, w, h);
+      c.fillStyle = '#dcdae2'; c.fillRect(0, 0, w, h); // soft grey so the RGB light reads on it
       const r = rand(7); for (let i = 0; i < 400; i++) { c.fillStyle = `rgba(0,0,0,${r() * 0.02})`; c.fillRect(r() * w, r() * h, 2, 2); }
     }) }),
     floor: new THREE.MeshLambertMaterial({ map: repeatTex(512, 512, (c, w, h) => {
@@ -74,7 +74,7 @@ const SURF = {
         c.fillStyle = 'rgba(0,0,0,.16)'; c.fillRect(0, i * pw, w, 2); c.fillRect(r() * w, i * pw, 2, pw);
       }
     }) }), floorRepeat: 5,
-    ceil: new THREE.MeshBasicMaterial({ color: '#ffffff' }),
+    ceil: new THREE.MeshBasicMaterial({ color: '#1d1b24' }), // dark ceiling, like a studio / modern café
   }),
   future: () => ({
     wall: new THREE.MeshLambertMaterial({ emissive: '#ffffff', emissiveIntensity: 0.0, map: repeatTex(512, 512, (c, w, h) => {
@@ -113,7 +113,7 @@ export function lookFor(id) {
 export const SKY = {
   lobby: { bg: '#1c1916', fog: [16, 60], hemi: 1.0 },
   past: { bg: '#a9d6f5', fog: [18, 64], hemi: 1.1 },
-  present: { bg: '#ecebe7', fog: [18, 64], hemi: 1.05 },
+  present: { bg: '#2a2733', fog: [18, 64], hemi: 0.82 },
   future: { bg: '#03050c', fog: [10, 40], hemi: 0.45 },
   final: { bg: '#0e0c0a', fog: [14, 50], hemi: 0.85 },
   corridorV: { bg: '#16120f', fog: [8, 30], hemi: 0.7 },
@@ -365,50 +365,98 @@ function buildPresent() {
   const welcome = eraBanner('present', 'NOW: 2025–2026', 'for you · trending · live', 10, 1.6);
   welcome.position.set(13, 5.3, 25.5); scene.add(welcome);
 
-  // P-pop concert stage against the back wall.
-  const sx0 = 7, sx1 = 19, sz0 = 0.15, sz1 = 3.8, sh = 0.7;
-  const stage = new THREE.Mesh(new THREE.BoxGeometry(sx1 - sx0, sh, sz1 - sz0), std('#151515', { roughness: 0.3, metalness: 0.4 }));
-  stage.position.set((sx0 + sx1) / 2, sh / 2, (sz0 + sz1) / 2); scene.add(stage);
-  blocks.push({ x0: sx0, x1: sx1, z0: sz0, z1: sz1 });
-  const ledMat = new THREE.MeshBasicMaterial({ color: '#fe2c55' });
-  const led = new THREE.Mesh(new THREE.BoxGeometry(sx1 - sx0, 0.08, 0.05), ledMat); led.position.set(13, sh - 0.05, sz1 + 0.03); scene.add(led);
-  const truss = std('#2b2b2b', { metalness: 0.7, roughness: 0.3 });
-  for (const x of [sx0 + 0.3, sx1 - 0.3]) { const p = new THREE.Mesh(new THREE.BoxGeometry(0.22, 5.6, 0.22), truss); p.position.set(x, 2.8, sz1 - 0.2); scene.add(p); }
-  const beam = new THREE.Mesh(new THREE.BoxGeometry(sx1 - sx0, 0.25, 0.25), truss); beam.position.set(13, 5.55, sz1 - 0.2); scene.add(beam);
-  const sign = neon('P-POP LIVE', 4.6, 0.95, ['#fe2c55', '#ffd6df']); sign.position.set(13, 6.0, sz1 - 0.05); scene.add(sign);
-  // Moving spotlight cones.
-  const cones = [];
-  [9, 13, 17].forEach((x, i) => {
-    const cone = new THREE.Mesh(new THREE.ConeGeometry(1.2, 5.2, 32, 1, true), new THREE.MeshBasicMaterial({ color: i === 1 ? '#25f4ee' : '#fe2c55', transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
-    cone.geometry.translate(0, -2.6, 0); cone.position.set(x, 5.4, sz1 - 0.2); scene.add(cone); cones.push(cone);
+  // 2025 lighting: colour-shifting RGB LED strips along every wall (top cove + floor), hexagon light panels,
+  // and smart-bulb room lights slowly cycling TikTok cyan / pink / purple.
+  const ledTex = canvasTex(512, 8, (c, w, h) => {
+    const g = c.createLinearGradient(0, 0, w, 0);
+    ['#25f4ee', '#7b6cff', '#fe2c55', '#ff8ad8', '#25f4ee'].forEach((col, i, arr) => g.addColorStop(i / (arr.length - 1), col));
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
   });
-  const stageLight = new THREE.PointLight('#fe2c55', 25, 14, 1.4); stageLight.position.set(13, 4.5, 5); scene.add(stageLight);
-  // Light sticks of the crowd.
-  const stickMats = ['#25f4ee', '#fe2c55', '#ffffff', '#b18cff'].map(c => new THREE.MeshBasicMaterial({ color: c }));
-  const rr = rand(31), sticks = [];
-  for (let i = 0; i < 34; i++) {
-    const s = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.42, 8), stickMats[i % 4]);
-    const x = 7 + rr() * 12, z = 5.2 + rr() * 3.5, y = 1.55 + rr() * 0.4;
-    s.position.set(x, y, z); scene.add(s); sticks.push({ s, x, y, p: rr() * 6 });
+  ledTex.wrapS = THREE.RepeatWrapping;
+  const washTex = ledTex;
+  const fade = up => canvasTex(4, 64, (c, w, h) => { const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(up ? 1 : 0, '#fff'); g.addColorStop(up ? 0 : 1, '#000'); c.fillStyle = g; c.fillRect(0, 0, w, h); });
+  const fadeDown = fade(false), fadeUp = fade(true);
+  const ledMats = [];
+  const r = roomById.present, inset = WALL_T / 2 + 0.03;
+  const walls = [ // [x0, z0, x1, z1] along each wall face
+    [r.x0 + inset, r.z0 + inset, r.x1 - inset, r.z0 + inset], [r.x1 - inset, r.z0 + inset, r.x1 - inset, r.z1 - inset],
+    [r.x1 - inset, r.z1 - inset, r.x0 + inset, r.z1 - inset], [r.x0 + inset, r.z1 - inset, r.x0 + inset, r.z0 + inset],
+  ];
+  for (const [x0, z0, x1, z1] of walls) {
+    const len = Math.hypot(x1 - x0, z1 - z0);
+    for (const y of [H - 0.12, 0.08]) {
+      const t = ledTex.clone(); t.needsUpdate = true; t.repeat.x = len / 9;
+      const m = new THREE.MeshBasicMaterial({ map: t }); ledMats.push(m);
+      const strip = new THREE.Mesh(new THREE.BoxGeometry(len, 0.07, 0.04), m);
+      strip.position.set((x0 + x1) / 2, y, (z0 + z1) / 2); strip.rotation.y = -Math.atan2(z1 - z0, x1 - x0); scene.add(strip);
+      // Soft coloured wash the strip throws onto the wall (fades away from the strip).
+      const wt = washTex.clone(); wt.needsUpdate = true; wt.repeat.x = len / 9; const top = y > 1;
+      const wm = new THREE.MeshBasicMaterial({ map: wt, alphaMap: top ? fadeDown : fadeUp, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending });
+      ledMats.push(wm);
+      const wash = new THREE.Mesh(new THREE.PlaneGeometry(len, 1.1), wm);
+      const ang = Math.atan2(z1 - z0, x1 - x0), nx = Math.sin(ang), nz = -Math.cos(ang); // wall normal into the room
+      wash.position.set((x0 + x1) / 2 - nx * 0.015, top ? y - 0.55 : y + 0.55, (z0 + z1) / 2 - nz * 0.015);
+      wash.rotation.y = -ang; scene.add(wash);
+    }
   }
+  // Hexagon light panels (gaming / creator-room style) on the south wall, east of the entrance.
+  const hexMats = ['#25f4ee', '#fe2c55', '#b18cff', '#ff8ad8'].map(c => new THREE.MeshBasicMaterial({ color: c }));
+  const hexes = [];
+  [[0, 0], [0.62, 0.36], [0.62, -0.36], [1.24, 0], [1.86, 0.36], [-0.62, 0.36], [1.24, 0.72]].forEach(([dx, dy], i) => {
+    const h = new THREE.Mesh(new THREE.CircleGeometry(0.34, 6), hexMats[i % 4]); h.rotation.z = Math.PI / 6;
+    put(h, 'present', 'south', 21.5 - dx, 3.3 + dy, 0.04); hexes.push({ h, p: i * 0.9 });
+  });
+  const smartA = new THREE.PointLight('#25f4ee', 22, 22, 1.3); smartA.position.set(7, 5.6, 12); scene.add(smartA);
+  const smartB = new THREE.PointLight('#fe2c55', 22, 22, 1.3); smartB.position.set(19, 5.6, 12); scene.add(smartB);
+  const ca = new THREE.Color(), cb = new THREE.Color();
   animators.push(t => {
-    cones.forEach((c, i) => { c.rotation.z = Math.sin(t * 0.9 + i * 2) * 0.45; c.rotation.x = 0.35 + Math.cos(t * 0.7 + i) * 0.2; });
-    const hue = (t * 0.15) % 1; ledMat.color.setHSL(hue, 0.9, 0.55); stageLight.color.setHSL(hue, 0.9, 0.6);
-    sticks.forEach(({ s, y, p }) => { s.rotation.z = Math.sin(t * 4 + p) * 0.5; s.position.y = y + Math.abs(Math.sin(t * 4 + p)) * 0.15; });
+    for (const m of ledMats) m.map.offset.x = (t * 0.05) % 1;
+    ca.setHSL((0.5 + Math.sin(t * 0.12) * 0.12 + 1) % 1, 0.85, 0.6); cb.setHSL((0.93 + Math.cos(t * 0.1) * 0.08 + 1) % 1, 0.85, 0.6);
+    smartA.color.copy(ca); smartB.color.copy(cb);
+    hexes.forEach(({ h, p }) => { h.material.opacity = 1; h.scale.setScalar(0.96 + Math.sin(t * 1.4 + p) * 0.04); });
   });
 
-  // Ring lights by the entrance.
-  for (const x of [5, 21]) {
-    const z = 24;
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.06, 16, 48), new THREE.MeshBasicMaterial({ color: '#fffaf0' }));
-    ring.position.set(x, 2.1, z); ring.rotation.y = x < 13 ? 0.6 : -0.6; scene.add(ring);
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.6, 8), std('#222')); pole.position.set(x, 0.8, z); scene.add(pole);
-    obstacles.push({ x, z, r: 0.45 });
+  // Creator corner (south-east, by the Body wall): ring light with a phone on a tripod, an LED panel,
+  // a chair for the creator and a glowing LIVE sign.
+  {
+    const cx = 21.5, cz = 24.6; // the tripod; the creator sits behind it to the south
+    const dark = std('#1d1d1f', { metalness: 0.5, roughness: 0.35 });
+    const tripod = new THREE.Group(); tripod.position.set(cx, 0, cz); scene.add(tripod);
+    const topJ = new THREE.Vector3(0, 1.12, 0);
+    for (let i = 0; i < 3; i++) { // legs splayed from the top joint down to the floor
+      const a = i / 3 * Math.PI * 2 + Math.PI / 2, foot = new THREE.Vector3(Math.cos(a) * 0.38, 0, Math.sin(a) * 0.38);
+      const dir = foot.clone().sub(topJ), len = dir.length();
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, len, 6), dark);
+      leg.position.copy(topJ).addScaledVector(dir, 0.5); leg.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize()); tripod.add(leg);
+    }
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.8, 8), dark); mast.position.y = 1.52; tripod.add(mast);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.045, 16, 48), new THREE.MeshBasicMaterial({ color: '#fffaf0' })); ring.position.y = 1.95; tripod.add(ring);
+    const phone = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.18, 0.012), dark); phone.position.set(0, 1.95, 0.02); tripod.add(phone);
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 0.165), new THREE.MeshBasicMaterial({ color: '#fe2c55' })); screen.position.set(0, 1.95, 0.027); tripod.add(screen);
+    const ringLight = new THREE.PointLight('#fff4e0', 6, 4, 1.5); ringLight.position.set(0, 1.95, 0.4); tripod.add(ringLight);
+    tripod.rotation.y = 0; // ring + phone face south, toward the creator's chair
+    // LED panel (softbox) on a stand, angled toward the chair.
+    const panelStand = new THREE.Group(); panelStand.position.set(cx - 1.5, 0, cz + 1.5); panelStand.rotation.y = Math.atan2(1.5, 0.5); scene.add(panelStand); // faces the chair
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.7, 8), dark); pole.position.y = 0.85; panelStand.add(pole);
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.55, 0.05), dark); panel.position.y = 1.8; panelStand.add(panel);
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.74, 0.49), new THREE.MeshBasicMaterial({ color: '#dff1ff' })); glow.position.set(0, 1.8, 0.027); panelStand.add(glow);
+    const panelLight = new THREE.PointLight('#dff1ff', 5, 4, 1.5); panelLight.position.set(0, 1.8, 0.4); panelStand.add(panelLight);
+    // Chair where the creator sits, facing the phone (north).
+    const chair = new THREE.Group(); chair.position.set(cx, 0, cz + 2.0); scene.add(chair);
+    const seatMat = std('#fe2c55', { roughness: 0.5 });
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.5), seatMat); seat.position.y = 0.48; chair.add(seat);
+    const back = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.6, 0.07), seatMat); back.position.set(0, 0.8, 0.22); chair.add(back);
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.44, 8), dark); stem.position.y = 0.24; chair.add(stem);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.03, 20), dark); base.position.y = 0.02; chair.add(base);
+    obstacles.push({ x: cx, z: cz, r: 0.45 }, { x: cx - 1.5, z: cz + 1.5, r: 0.35 }, { x: cx, z: cz + 2.0, r: 0.4 });
+    // LIVE sign on the south wall behind the chair, with a pulsing red dot.
+    const live = neon('● LIVE', 2.8, 0.9, ['#ff2a4d', '#ffe3e8']); put(live, 'present', 'south', 21.5, 1.95, 0.05); // between the chair back and the hexagons
+    animators.push(t => { live.material.opacity = 0.75 + Math.abs(Math.sin(t * 2.2)) * 0.25; });
   }
   // Neon hashtags on the entrance wall (seen when you turn around).
   [['#fyp', 6, ['#25f4ee', '#d6fffd']], ['#PPOP', 13, ['#fe2c55', '#ffd6df']], ['#OPM', 20, ['#25f4ee', '#d6fffd']]].forEach(([t, x, col]) =>
     put(neon(t, 3.2, 0.9, col), 'present', 'south', x, 5.0, 0.05));
-  const fill = new THREE.PointLight('#ffffff', 35, 40, 1.2); fill.position.set(13, 5.8, 16); scene.add(fill);
+  const fill = new THREE.PointLight('#ffffff', 20, 40, 1.2); fill.position.set(13, 5.8, 16); scene.add(fill);
 
   // The Freedom Wall for this room is built by freedom.js.
 }

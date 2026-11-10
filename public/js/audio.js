@@ -5,7 +5,7 @@
 //   era rooms: a soft ElevenLabs music bed (past/present/future.mp3) under each room's effects
 //   lobby / final / corridor: warm gallery pad
 //   2000s: phone-style beep melodies + a soft dial-up modem texture
-//   Now: muffled concert beat heard "through the wall"
+//   Now: (the old concert drum beat was removed; the ElevenLabs bed carries the room)
 //   2030: synth drone with shimmering pings
 // Doorway time-warps play a whoosh.
 
@@ -16,7 +16,7 @@ const TRACKS = { intro: 'assets/audio/intro.mp3', lobby: 'assets/audio/lobby.mp3
   past: 'assets/audio/past.mp3', present: 'assets/audio/present.mp3', future: 'assets/audio/future.mp3' };
 const MUSIC_OF = { start: 'intro', lobby: 'lobby', past: 'past', present: 'present', future: 'future' };
 // Lobby/intro music is the main sound; era-room music is a soft bed under that room's effects.
-const TRACK_LEVEL = { intro: 0.75, lobby: 0.75, past: 0.32, present: 0.3, future: 0.32 };
+const TRACK_LEVEL = { intro: 0.75, lobby: 0.75, past: 0.32, present: 0.45, future: 0.32 }; // Now has no effects layer, so its bed is a bit louder
 const NEXT_ROOM = { start: 'lobby', lobby: 'past', past: 'present', present: 'future' }; // prefetch the next room's music
 const music = {}; // name -> { gain, src }
 const layers = {};
@@ -71,24 +71,7 @@ function makeLayer(name) {
       return 4 + Math.random() * 4;
     };
   }
-  if (name === 'present') {
-    const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 650; lp.connect(out); // "through the wall"
-    const beat = 60 / 104; let step = 0;
-    L.event = t => {
-      const k = ac.createOscillator(); k.type = 'sine'; k.frequency.setValueAtTime(130, t); k.frequency.exponentialRampToValueAtTime(42, t + 0.18);
-      const kg = ac.createGain(); env(kg, t, 0.003, 0.5, 0.25); k.connect(kg); kg.connect(lp); k.start(t); k.stop(t + 0.3);
-      if (step % 2 === 1) { // clap/snare on 2 and 4
-        const n = ac.createBufferSource(); n.buffer = noise(); const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1500;
-        const g = ac.createGain(); env(g, t, 0.003, 0.18, 0.12); n.connect(bp); bp.connect(g); g.connect(lp); n.start(t); n.stop(t + 0.2);
-      }
-      if (step % 4 === 0) { // bass note per bar
-        const b = ac.createOscillator(); b.type = 'triangle'; b.frequency.value = [55, 55, 49, 61.74][(step / 4) % 4];
-        const bg = ac.createGain(); env(bg, t, 0.01, 0.22, beat * 3.5); b.connect(bg); bg.connect(lp); b.start(t); b.stop(t + beat * 4);
-      }
-      step = (step + 1) % 16;
-      return beat;
-    };
-  }
+  // 'present' has no generated sound any more: the drum beat clashed with the room's music bed.
   return L;
 }
 
