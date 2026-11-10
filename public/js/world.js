@@ -120,7 +120,7 @@ const WALK = [
 export const obstacles = []; // circles {x, z, r}
 export const blocks = [];    // rectangles {x0, x1, z0, z1} (stages, desks)
 
-function walkable(x, z) {
+export function walkable(x, z) {
   if (blocks.some(b => x > b.x0 - R && x < b.x1 + R && z > b.z0 - R && z < b.z1 + R)) return false;
   return WALK.some(a => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1);
 }

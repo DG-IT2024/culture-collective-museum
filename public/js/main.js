@@ -1,6 +1,6 @@
 // Culture Collective: the walkable museum (Phase 1 core).
 import * as THREE from 'three';
-import { H, EYE, ROOMS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, obstacles, SLOTS } from './world.js';
+import { H, EYE, ROOMS, DOORS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, walkable, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
 import { setRoom as setSoundRoom, whoosh, setEnabled as setSound, isEnabled as soundOn, wantsSound } from './audio.js';
 import { initExtras, openTrivia, openPassport, takePhoto } from './extras.js';
@@ -204,14 +204,15 @@ function setState(s) {
   $('hud').classList.toggle('hidden', s === 'start');
   $('joy').classList.toggle('hidden', !(s === 'playing' && isTouch));
   $('lookhint').classList.toggle('hidden', !(s === 'playing' && isTouch));
-  $('crosshair').classList.toggle('hidden', isTouch);
-  if (s !== 'playing') for (const k in keys) keys[k] = false;
+  $('crosshair').classList.add('hidden'); // free cursor now; no centre crosshair
+  if (s !== 'playing') { for (const k in keys) keys[k] = false; drag = null; ring.visible = false; }
 }
-function lock() { if (isTouch) return; try { const p = canvas.requestPointerLock(); p?.catch?.(() => {}); } catch {} }
-function unlock() { if (document.pointerLockElement) document.exitPointerLock(); }
-function play() { setState('playing'); lock(); }
+// Free cursor (Artsteps-style): no pointer lock. These stay as no-ops so overlays can call them.
+function lock() {}
+function unlock() {}
+function play() { setState('playing'); }
 
-function teleport(id) { const s = SPAWNS[id]; camera.position.set(s.x, EYE, s.z); yaw = s.yaw; pitch = 0; }
+function teleport(id) { try { cancelAuto(); } catch {} const s = SPAWNS[id]; camera.position.set(s.x, EYE, s.z); yaw = s.yaw; pitch = 0; }
 teleport('lobby');
 
 $('btn-enter').onclick = () => { if (wantsSound()) setSound(true); play(); updateRoom(true); };
@@ -225,13 +226,12 @@ $('glasses-no').onclick = () => { glasses.set(false); play(); };
 $('btn-glasses').onclick = () => glasses.set(!glasses.on);
 const ui = { modal(name) { unlock(); setState(name); }, play: () => play(), toast: (a, b) => toast(a, b) };
 
-document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && state === 'playing' && !isTouch) setState('paused'); });
 
 for (const id of ['lobby', 'past', 'present', 'future', 'final']) {
   const r = ROOMS.find(x => x.id === id);
   const b = document.createElement('button');
   b.type = 'button'; b.innerHTML = `${r.name}<small>${r.sub}</small>`;
-  b.onclick = () => { teleport(id); play(); };
+  b.onclick = () => { cancelAuto(); teleport(id); play(); };
   $('maplist').appendChild(b);
 }
 
@@ -268,10 +268,13 @@ function interact(obj) {
 // Input
 // ---------------------------------------------------------------------------
 addEventListener('keydown', e => {
+  if (e.target.closest?.('input, textarea')) return;
+  const wasPlaying = state === 'playing';
   keys[e.code] = true;
-  if (state === 'playing' && e.code === 'KeyE') interact(target);
-  if (state === 'playing' && e.code === 'KeyP') takePhoto();
-  if (e.code === 'KeyM') { if (state === 'playing') { unlock(); setState('paused'); } else if (state === 'paused') play(); }
+  if (wasPlaying && e.code === 'KeyE') interact(target);
+  if (wasPlaying && e.code === 'KeyP') takePhoto();
+  if (e.code === 'KeyM') { if (wasPlaying) setState('paused'); else if (state === 'paused') play(); }
+  if (wasPlaying && e.code === 'Escape') setState('paused');
   if (state === 'card') {
     if (e.code === 'ArrowRight') stepCard(1);
     if (e.code === 'ArrowLeft') stepCard(-1);
@@ -279,14 +282,126 @@ addEventListener('keydown', e => {
   }
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
-document.addEventListener('mousemove', e => {
-  if (state !== 'playing' || document.pointerLockElement !== canvas) return;
-  yaw -= e.movementX * 0.0022; pitch = Math.max(-1.3, Math.min(1.3, pitch - e.movementY * 0.0022));
+
+// ---------------------------------------------------------------------------
+// Click-to-walk: drag to look, click the floor to glide there, click art to walk up to it.
+// ---------------------------------------------------------------------------
+const mouse = new THREE.Vector2(9, 9); // NDC of the cursor (9 = off-screen)
+let drag = null;
+const ring = new THREE.Group();
+{
+  const m = c => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.85, depthWrite: false });
+  const r1 = new THREE.Mesh(new THREE.RingGeometry(0.26, 0.34, 48), m('#ffffff'));
+  const r2 = new THREE.Mesh(new THREE.CircleGeometry(0.2, 32), m('#c8a24f')); r2.material.opacity = 0.35;
+  for (const r of [r1, r2]) { r.rotation.x = -Math.PI / 2; ring.add(r); }
+  ring.position.y = 0.03; ring.visible = false; ring.renderOrder = 5; scene.add(ring);
+}
+const dest = ring.clone(); dest.visible = false; scene.add(dest); // marker where you're heading
+
+// Every solid mesh blocks the ray (so you can't click art through walls); see-through effects don't.
+let solids = null;
+function buildSolids() {
+  solids = [];
+  const click = new Set(clickables);
+  scene.traverse(o => {
+    if (!o.isMesh || o === ring || ring.children.includes(o) || dest.children.includes(o)) return;
+    const mat = Array.isArray(o.material) ? o.material[0] : o.material;
+    const seeThrough = mat && (mat.blending === THREE.AdditiveBlending || (mat.transparent && mat.opacity < 0.9));
+    if (click.has(o) || !seeThrough) solids.push(o);
+  });
+}
+function hitAt(ndc) {
+  if (!solids) buildSolids();
+  ray.setFromCamera(ndc, camera); ray.far = 60;
+  for (const h of ray.intersectObjects(solids, false)) {
+    if (!h.object.visible) continue;
+    if (h.object.userData?.type) return { obj: h.object, point: h.point };
+    if (h.point.y < 0.06 && walkable(h.point.x, h.point.z)) return { floor: h.point };
+    return null; // a wall, plinth or ceiling
+  }
+  return null;
+}
+
+// Route between rooms through doorway centres.
+const LINKS = DOORS.map(d => {
+  const n = d.axis === 'z' ? [0, 1] : [1, 0];
+  const x = d.axis === 'z' ? d.c : d.at, z = d.axis === 'z' ? d.at : d.c;
+  return { x, z, n, a: roomAt(x - n[0] * 1.5, z - n[1] * 1.5)?.id, b: roomAt(x + n[0] * 1.5, z + n[1] * 1.5)?.id };
 });
-canvas.addEventListener('click', () => {
-  if (isTouch || state !== 'playing') return;
-  if (document.pointerLockElement !== canvas) lock(); else interact(target);
+function planPath(tx, tz) {
+  const from = roomAt(camera.position.x, camera.position.z)?.id, to = roomAt(tx, tz)?.id;
+  const pts = [];
+  if (from && to && from !== to) {
+    const prev = { [from]: null }, q = [from];
+    while (q.length) {
+      const r = q.shift(); if (r === to) break;
+      for (const L of LINKS) {
+        const nxt = L.a === r ? L.b : L.b === r ? L.a : null;
+        if (nxt && !(nxt in prev)) { prev[nxt] = { r, L }; q.push(nxt); }
+      }
+    }
+    const steps = []; for (let r = to; prev[r]; r = prev[r].r) steps.unshift({ from: prev[r].r, L: prev[r].L });
+    for (const { from: r, L } of steps) {
+      const s = L.a === r ? 1 : -1;
+      pts.push({ x: L.x - L.n[0] * 1.6 * s, z: L.z - L.n[1] * 1.6 * s, via: true }, { x: L.x + L.n[0] * 1.6 * s, z: L.z + L.n[1] * 1.6 * s, via: true });
+    }
+  }
+  pts.push({ x: tx, z: tz });
+  return pts;
+}
+const auto = { path: [], face: null, then: null, stuck: 0 };
+function cancelAuto() { auto.path = []; auto.face = null; auto.then = null; dest.visible = false; }
+function goTo(x, z, face = null, then = null) {
+  auto.path = planPath(x, z); auto.face = face; auto.then = then; auto.stuck = 0;
+  dest.position.set(x, 0.03, z); dest.visible = true;
+}
+
+// Where to stand to view something: in front of an exhibit, or just before any other clickable.
+function approach(obj) {
+  const d = obj.userData;
+  if (d.type === 'exhibit') {
+    const g = d.ex.group, n = new THREE.Vector3(Math.sin(g.rotation.y), 0, Math.cos(g.rotation.y));
+    const h = d.ex.size?.h || 1.6;
+    let dist = Math.max(2.6, h * 1.35);
+    while (dist > 1.4 && !walkable(g.position.x + n.x * dist, g.position.z + n.z * dist)) dist -= 0.2;
+    const cy = g.position.y - 0.25;
+    return { x: g.position.x + n.x * dist, z: g.position.z + n.z * dist, face: { yaw: g.rotation.y, pitch: Math.atan2(cy - EYE, dist) }, then: () => openCard(d.ex) };
+  }
+  const p = new THREE.Vector3(); obj.getWorldPosition(p);
+  const v = new THREE.Vector3(camera.position.x - p.x, 0, camera.position.z - p.z);
+  if (v.length() < 3.2) return { x: camera.position.x, z: camera.position.z, face: null, then: () => interact(obj) };
+  v.normalize();
+  let dist = 2.4; while (dist < 4 && !walkable(p.x + v.x * dist, p.z + v.z * dist)) dist += 0.3;
+  const x = p.x + v.x * dist, z = p.z + v.z * dist;
+  return { x, z, face: { yaw: Math.atan2(-(p.x - x), -(p.z - z)), pitch: Math.atan2(p.y - EYE, dist) * 0.6 }, then: () => interact(obj) };
+}
+function clickAt(ndc) {
+  const h = hitAt(ndc);
+  if (!h) return;
+  if (h.obj) { const a = approach(h.obj); goTo(a.x, a.z, a.face, a.then); }
+  else goTo(h.floor.x, h.floor.z);
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (isTouch || state !== 'playing' || e.button !== 0) return;
+  drag = { x: e.clientX, y: e.clientY, moved: 0 };
 });
+addEventListener('mousemove', e => {
+  mouse.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  if (!drag || state !== 'playing') return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.x = e.clientX; drag.y = e.clientY; drag.moved += Math.abs(dx) + Math.abs(dy);
+  if (drag.moved > 5) {
+    yaw -= dx * 0.0035; pitch = Math.max(-1.2, Math.min(1.2, pitch - dy * 0.0035));
+    if (auto.face) auto.face = null; // you took over the view
+  }
+});
+addEventListener('mouseup', e => {
+  if (!drag) return;
+  const wasClick = drag.moved <= 5; drag = null;
+  if (wasClick && state === 'playing' && e.target === canvas) clickAt(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1));
+});
+canvas.addEventListener('mouseleave', () => mouse.set(9, 9));
 
 // Touch: left joystick to walk, drag elsewhere to look, tap to open.
 const joy = { id: null, x: 0, y: 0, cx: 0, cy: 0 };
@@ -321,7 +436,7 @@ function touchEnd(e) {
     if (!l) continue;
     looks.delete(t.identifier);
     if (state === 'playing' && Math.hypot(t.clientX - l.sx, t.clientY - l.sy) < 10 && performance.now() - l.t < 350) {
-      interact(pick(new THREE.Vector2(t.clientX / innerWidth * 2 - 1, -(t.clientY / innerHeight) * 2 + 1), 10));
+      clickAt(new THREE.Vector2(t.clientX / innerWidth * 2 - 1, -(t.clientY / innerHeight) * 2 + 1));
     }
   }
 }
@@ -361,7 +476,7 @@ const clock = new THREE.Clock();
 const vel = new THREE.Vector2();
 const bgTo = new THREE.Color();
 
-renderer.setAnimationLoop(() => {
+function frame() {
   const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
   if (state === 'playing') {
     let fx = 0, fz = 0;
@@ -371,12 +486,38 @@ renderer.setAnimationLoop(() => {
     if (keys.KeyD || keys.ArrowRight) fx += 1;
     if (joy.id !== null) { fx += joy.x; fz += joy.y; }
     const len = Math.hypot(fx, fz); if (len > 1) { fx /= len; fz /= len; }
+    if (len > 0.05) cancelAuto(); // keys or joystick take over from click-to-walk
     const speed = keys.ShiftLeft || keys.ShiftRight ? 8 : 4.2;
     const s = Math.sin(yaw), c = Math.cos(yaw);
+    let wx = (fx * c + fz * s) * speed, wz = (-fx * s + fz * c) * speed;
+    if (auto.path.length) {
+      const p = auto.path[0], dx = p.x - camera.position.x, dz = p.z - camera.position.z, d = Math.hypot(dx, dz);
+      if (d < (p.via ? 0.6 : 0.12)) { auto.path.shift(); auto.stuck = 0; if (!auto.path.length) dest.visible = false; }
+      else {
+        const sp = p.via ? 4.2 : Math.min(4.2, 0.6 + d * 2.2);
+        wx = dx / d * sp; wz = dz / d * sp;
+        if (d > 1.2) { // turn gently toward where you're going
+          const want = Math.atan2(-dx, -dz); let dy = want - yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+          if (!drag) yaw += dy * Math.min(1, dt * 1.8);
+        }
+      }
+    } else if (auto.face) {
+      wx = wz = 0;
+      let dy = auto.face.yaw - yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      const dp = auto.face.pitch - pitch, kf = Math.min(1, dt * 5);
+      yaw += dy * kf; pitch += dp * kf;
+      if (Math.abs(dy) < 0.02 && Math.abs(dp) < 0.02) { const then = auto.then; auto.face = null; auto.then = null; then?.(); }
+    } else if (auto.then) { const then = auto.then; auto.then = null; then(); }
     const k = Math.min(1, dt * 10);
-    vel.x += ((fx * c + fz * s) * speed - vel.x) * k;
-    vel.y += ((-fx * s + fz * c) * speed - vel.y) * k;
+    vel.x += (wx - vel.x) * k;
+    vel.y += (wz - vel.y) * k;
+    const bx = camera.position.x, bz = camera.position.z;
     moveWithCollision(camera.position, vel.x * dt, vel.y * dt);
+    if (auto.path.length) { // blocked (e.g. walked into a stage)? give up instead of pushing forever
+      const moved = Math.hypot(camera.position.x - bx, camera.position.z - bz), sp = vel.length();
+      auto.stuck = sp > 1 && moved < sp * dt * 0.3 ? auto.stuck + dt : 0;
+      if (auto.stuck > 0.6) cancelAuto();
+    }
     camera.position.y = EYE + Math.sin(t * 9) * 0.025 * Math.min(1, vel.length() / 4);
     updateRoom();
   }
@@ -389,20 +530,25 @@ renderer.setAnimationLoop(() => {
   scene.background.lerp(bgTo, k2); scene.fog.color.copy(scene.background);
   scene.fog.near += (look.fog[0] - scene.fog.near) * k2; scene.fog.far += (look.fog[1] - scene.fog.far) * k2;
 
-  if (state === 'playing' && !isTouch) {
-    target = pick(new THREE.Vector2(0, 0));
+  if (state === 'playing' && !isTouch && mouse.x < 2) {
+    const h = drag?.moved > 5 ? null : hitAt(mouse);
+    target = h?.obj || null;
     const d = target?.userData;
-    $('crosshair').classList.toggle('on', !!d);
+    ring.visible = !!h?.floor;
+    if (h?.floor) ring.position.set(h.floor.x, 0.03, h.floor.z);
+    canvas.style.cursor = drag?.moved > 5 ? 'grabbing' : d ? 'pointer' : 'default';
     $('hint').classList.toggle('hidden', !d);
-    if (d?.type === 'exhibit') $('hint').textContent = `E · ${d.ex.item.title}`;
-    else if (d?.type === 'wall') $('hint').textContent = 'E · Freedom Wall: read & post';
-    else if (d?.type === 'trivia') $('hint').textContent = 'E · Answer trivia for a passport stamp';
-    else if (d?.type === 'passport') $('hint').textContent = 'E · Passport check-out';
-  } else $('hint').classList.add('hidden');
+    if (d?.type === 'exhibit') $('hint').textContent = `Click · ${d.ex.item.title}`;
+    else if (d?.type === 'wall') $('hint').textContent = 'Click · Freedom Wall: read & post';
+    else if (d?.type === 'trivia') $('hint').textContent = 'Click · Answer trivia for a passport stamp';
+    else if (d?.type === 'passport') $('hint').textContent = 'Click · Passport check-out';
+  } else { $('hint').classList.add('hidden'); ring.visible = false; }
+  if (dest.visible) { const s = 1 + Math.sin(t * 6) * 0.12; dest.scale.set(s, 1, s); }
 
   for (const a of animators) a(t, dt);
   renderer.render(scene, camera);
-});
+}
+renderer.setAnimationLoop(frame);
 
 decorate({ scene, animators, clickables, camera, ui });
 initFreedom({ scene, animators, clickables, ui, currentRoom: () => currentRoom?.id });
@@ -411,4 +557,4 @@ initExtras({ scene, animators, clickables, ui, camera, renderer, teleport, getYa
 
 if (isTouch) { $('controls-desktop').classList.add('hidden'); $('controls-touch').classList.remove('hidden'); }
 setState('start');
-window.__cc = { camera, teleport, exhibits, setYaw: v => { yaw = v; }, setPitch: v => { pitch = v; }, renderer, scene, openCard, glasses, get state() { return state; } };
+window.__cc = { camera, teleport, exhibits, setYaw: v => { yaw = v; }, setPitch: v => { pitch = v; }, renderer, scene, openCard, glasses, clickAt: (x, y) => clickAt(new THREE.Vector2(x, y)), hitAt: (x, y) => hitAt(new THREE.Vector2(x, y)), auto, _frame: frame, get state() { return state; } };

@@ -53,7 +53,7 @@ function addStand(era) {
   const rim = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.05, 0.56), new THREE.MeshBasicMaterial({ color: s.col })); rim.position.y = 1.07; g.add(rim);
   const font = era === 'past' ? '44px Bungee' : era === 'future' ? '800 42px Orbitron' : '800 46px Inter';
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.86),
-    new THREE.MeshBasicMaterial({ map: standTex(s.title, matchMedia('(pointer: coarse)').matches ? 'Tap to answer one question' : 'Aim here & press E to answer one question', s.col, font) }));
+    new THREE.MeshBasicMaterial({ map: standTex(s.title, matchMedia('(pointer: coarse)').matches ? 'Tap to answer one question' : 'Click here to answer one question', s.col, font) }));
   screen.position.set(0, 1.55, 0.05); screen.rotation.x = -0.25; g.add(screen);
   ctx.scene.add(g);
   obstacles.push({ x: s.x, z: s.z, r: 0.55 });
