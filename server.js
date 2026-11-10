@@ -22,6 +22,13 @@ const recentPosts = new Map();   // ip -> timestamps of recent posts
 const reported = new Set();      // `${ip}:${postId}` so one visitor reports a post once
 const POSTS_PER_MINUTE = 4;
 
+// Railway's edge rotates proxy hops, so req.ip alone is not the visitor. The edge sets
+// X-Real-IP to the connecting client's address; fall back to req.ip locally.
+function clientIp(req) {
+  const real = String(req.get('x-real-ip') || '').trim();
+  return real || req.ip;
+}
+
 function rateLimited(ip) {
   const now = Date.now();
   const list = (recentPosts.get(ip) || []).filter(t => now - t < 60_000);
@@ -39,9 +46,10 @@ app.get('/api/posts', async (req, res) => {
 });
 
 app.post('/api/posts', json, async (req, res) => {
+  console.log('ipdbg', JSON.stringify({ ip: req.ip, xff: req.get('x-forwarded-for'), real: req.get('x-real-ip') }));
   const v = validate(req.body);
   if (v.error) return res.status(400).json({ error: v.error });
-  if (rateLimited(req.ip)) return res.status(429).json({ error: 'Slow down a little. Try again in a minute.' });
+  if (rateLimited(clientIp(req))) return res.status(429).json({ error: 'Slow down a little. Try again in a minute.' });
   try { res.status(201).json({ post: await store.add(v) }); }
   catch (e) { console.error(e); res.status(500).json({ error: 'Could not save your post.' }); }
 });
@@ -49,7 +57,7 @@ app.post('/api/posts', json, async (req, res) => {
 app.post('/api/posts/:id/report', async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || id < 1) return res.status(400).json({ error: 'Bad post id.' });
-  const key = `${req.ip}:${id}`;
+  const key = `${clientIp(req)}:${id}`;
   if (reported.has(key)) return res.json({ ok: true, already: true });
   try {
     const r = await store.report(id);
