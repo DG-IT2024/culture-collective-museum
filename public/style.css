@@ -107,3 +107,42 @@ kbd { font: 11px/1 Inter, sans-serif; border: 1px solid var(--line); border-bott
 #tools button.on { border-color: #00e5ff; color: #7df9ff; box-shadow: 0 0 12px rgba(0,229,255,.5); }
 .glasses-panel { border-color: rgba(0,229,255,.5); }
 .glasses-panel .kicker { color: #7df9ff; }
+
+/* Phase 3: Freedom Wall panel, styled per era */
+.wallpanel { width: min(640px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; }
+.wallpanel .lede { color: var(--muted); margin: 0 0 14px; }
+#wallform { display: grid; gap: 10px; }
+#wallform input, #wallform textarea { font: inherit; color: var(--ink); background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+#wallform textarea { min-height: 92px; resize: vertical; }
+.formrow { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--muted); }
+#wall-error { color: #ff8a8a; }
+.posts { margin-top: 20px; display: grid; gap: 10px; }
+.post { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: rgba(255,255,255,.04); }
+.post header { display: flex; align-items: baseline; gap: 10px; }
+.post header span { color: var(--muted); font-size: 12px; }
+.post p { margin: 6px 0 0; overflow-wrap: anywhere; }
+.post .report { margin-left: auto; background: none; border: 0; color: var(--muted); font-size: 12px; text-decoration: underline; padding: 0; }
+.post .report:disabled { text-decoration: none; opacity: .7; cursor: default; }
+.empty { color: var(--muted); font-style: italic; }
+#wallwrap[data-era="past"] .wallpanel { background: #eaf1fb; color: #1d2a44; border-color: #3b6fc4; }
+#wallwrap[data-era="past"] h2 { font-family: Arial, sans-serif; color: #3b6fc4; }
+#wallwrap[data-era="past"] .kicker { color: #ff7a00; }
+#wallwrap[data-era="past"] .lede, #wallwrap[data-era="past"] .formrow, #wallwrap[data-era="past"] .post header span, #wallwrap[data-era="past"] .post .report, #wallwrap[data-era="past"] .empty { color: #5b6b86; }
+#wallwrap[data-era="past"] input, #wallwrap[data-era="past"] textarea { background: #fff; color: #1d2a44; border-color: #9db6df; }
+#wallwrap[data-era="past"] .post { background: #fff; border-color: #9db6df; }
+#wallwrap[data-era="past"] .post b { color: #3b6fc4; }
+#wallwrap[data-era="past"] .btn { background: #ff7a00; color: #fff; }
+#wallwrap[data-era="past"] .btn.ghost { background: transparent; color: #3b6fc4; border-color: #9db6df; }
+#wallwrap[data-era="present"] .wallpanel { background: #0b0b0b; border-color: #333; }
+#wallwrap[data-era="present"] h2 { font-family: Inter, sans-serif; font-weight: 800; }
+#wallwrap[data-era="present"] .kicker { color: #25f4ee; }
+#wallwrap[data-era="present"] .btn { background: #fe2c55; color: #fff; }
+#wallwrap[data-era="present"] .btn.ghost { background: transparent; border-color: #444; }
+#wallwrap[data-era="present"] .post { background: #161616; border-color: #262626; }
+#wallwrap[data-era="future"] .wallpanel { background: rgba(2, 20, 34, .94); border-color: #00e5ff; box-shadow: 0 0 40px rgba(0,229,255,.25); }
+#wallwrap[data-era="future"] h2, #wallwrap[data-era="future"] .kicker { font-family: Orbitron, sans-serif; color: #d9fdff; }
+#wallwrap[data-era="future"] .kicker { color: #7df9ff; }
+#wallwrap[data-era="future"] .btn { background: #00e5ff; color: #02141f; }
+#wallwrap[data-era="future"] .btn.ghost { background: transparent; color: #7df9ff; border-color: rgba(0,229,255,.5); }
+#wallwrap[data-era="future"] .post { background: rgba(0,229,255,.06); border-color: rgba(0,229,255,.35); border-radius: 22px; }
+#wallwrap[data-era="future"] .post b { color: #7df9ff; font-family: Orbitron, sans-serif; font-size: 13px; letter-spacing: .08em; }

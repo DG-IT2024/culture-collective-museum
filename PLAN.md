@@ -109,7 +109,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - **Final room:** rising pedestals (Nokia → phone → glasses), floor marker + neon sign, thank-you wall, credits corridor.
 - **Done when:** each room is recognizable at a glance. ✅ **This is a submittable museum** (posting still local only).
 
-## Phase 3 · Shared Freedom Walls (≈1 h)
+## Phase 3 · Shared Freedom Walls (≈1 h) ✅ done (Postgres path untested until Railway)
 - Server API + Postgres table, bad-word filter, report → hide at 3.
 - In-world post form (nickname optional, 200 chars) and per-era rendering: Friendster testimonial boxes, TikTok comment column, hologram bubbles. Click a post to read it or report it.
 - **Done when:** a post made in one browser appears in another.

@@ -340,23 +340,7 @@ function buildPast() {
   }
   const sun = new THREE.PointLight('#ffffff', 40, 40, 1.2); sun.position.set(16, 5.6, 45); scene.add(sun);
 
-  // Friendster-style Freedom Wall shell (east wall, by the exit).
-  const fw = canvasTex(1200, 820, (c, w, h) => {
-    c.fillStyle = '#e8f0fb'; c.fillRect(0, 0, w, h);
-    c.fillStyle = '#3b6fc4'; c.fillRect(0, 0, w, 110);
-    c.fillStyle = '#fff'; c.font = '700 54px Arial'; c.textBaseline = 'middle'; c.fillText('friendster-style', 40, 58);
-    c.font = '26px VT323'; c.textAlign = 'right'; c.fillText('home · profile · friends · testimonials', w - 40, 60); c.textAlign = 'left';
-    c.fillStyle = '#ff7a00'; c.fillRect(40, 140, w - 80, 70);
-    c.fillStyle = '#fff'; c.font = '700 36px Arial'; c.fillText('★ Testimonials · Freedom Wall ★', 64, 176);
-    c.fillStyle = '#333'; c.font = '26px Arial';
-    c.fillText('Leave a testimonial for the 2000s room. What do you remember?', 64, 260);
-    for (let i = 0; i < 3; i++) {
-      c.fillStyle = '#fff'; c.fillRect(64, 310 + i * 150, w - 128, 128); c.strokeStyle = '#9db6df'; c.lineWidth = 2; c.strokeRect(64, 310 + i * 150, w - 128, 128);
-      c.fillStyle = '#c9d6ec'; c.fillRect(84, 330 + i * 150, 88, 88);
-      c.fillStyle = '#9aa7bd'; c.font = 'italic 24px Arial'; c.fillText(i === 0 ? 'Testimonials open in Phase 3.' : '', 196, 375 + i * 150);
-    }
-  });
-  put(plane(6.2, 4.24, fw), 'past', 'east', 33.8, 2.6, 0.06);
+  // The Freedom Wall for this room is built by freedom.js.
 }
 
 function nokiaModel(scale) {
@@ -426,23 +410,7 @@ function buildPresent() {
     put(neon(t, 3.2, 0.9, col), 'present', 'south', x, 5.0, 0.05));
   const fill = new THREE.PointLight('#ffffff', 35, 40, 1.2); fill.position.set(13, 5.8, 16); scene.add(fill);
 
-  // TikTok comment-section Freedom Wall shell (east wall, by the exit).
-  const tw = canvasTex(1200, 840, (c, w, h) => {
-    c.fillStyle = '#0b0b0b'; c.fillRect(0, 0, w, h);
-    c.fillStyle = '#1e1e1e'; roundRect(c, 40, 40, 420, h - 80, 28); c.fill();
-    c.fillStyle = '#fff'; c.font = '800 30px Inter'; c.textAlign = 'center'; c.fillText('Freedom Wall', 250, 110);
-    c.fillStyle = '#25f4ee'; c.font = '700 22px Inter'; c.fillText('#CultureCollective', 250, 150);
-    c.font = '90px Inter'; c.fillText('♥', 250, 420); c.fillStyle = '#aaa'; c.font = '600 22px Inter'; c.fillText('Post what you love about Now', 250, 520);
-    c.textAlign = 'left'; c.fillStyle = '#fff'; c.font = '800 34px Inter'; c.fillText('Comments', 510, 92);
-    c.fillStyle = '#777'; c.font = '600 22px Inter'; c.fillText('Comments open in Phase 3', 510, 140);
-    for (let i = 0; i < 4; i++) {
-      c.fillStyle = '#2a2a2a'; c.beginPath(); c.arc(540, 220 + i * 150, 30, 0, 7); c.fill();
-      c.fillStyle = '#242424'; roundRect(c, 590, 194 + i * 150, 560, 22, 11); c.fill(); roundRect(c, 590, 228 + i * 150, 420, 22, 11); c.fill();
-    }
-    c.fillStyle = '#fe2c55'; roundRect(c, 510, h - 100, 640, 60, 30); c.fill();
-    c.fillStyle = '#fff'; c.font = '700 26px Inter'; c.fillText('Add comment…', 540, h - 62);
-  });
-  put(plane(5.8, 4.06, tw), 'present', 'east', 8.6, 2.55, 0.06);
+  // The Freedom Wall for this room is built by freedom.js.
 }
 
 function buildFuture() {
@@ -482,20 +450,7 @@ function buildFuture() {
     g.attributes.position.needsUpdate = true;
   });
 
-  // Holographic message stream Freedom Wall shell (south wall, by the exit).
-  const hw = canvasTex(760, 840, (c, w, h) => {
-    c.clearRect(0, 0, w, h); c.strokeStyle = '#00e5ff'; c.lineWidth = 4; c.shadowColor = '#00e5ff'; c.shadowBlur = 20;
-    roundRect(c, 14, 14, w - 28, h - 28, 22); c.stroke(); c.fillStyle = 'rgba(0,30,50,.55)'; c.fill(); c.shadowBlur = 0;
-    c.fillStyle = '#d9fdff'; c.font = '800 40px Orbitron'; c.textAlign = 'center'; c.fillText('MESSAGES', w / 2, 90);
-    c.font = '500 20px Orbitron'; c.fillStyle = '#7df9ff'; c.fillText('TO THE FUTURE · FREEDOM WALL', w / 2, 130);
-    for (let i = 0; i < 4; i++) {
-      c.strokeStyle = 'rgba(125,249,255,.5)'; c.lineWidth = 2; roundRect(c, 70 + (i % 2) * 60, 190 + i * 150, 500, 110, 55); c.stroke();
-    }
-    c.fillStyle = '#7df9ff'; c.font = '500 20px Orbitron'; c.fillText('STREAM OPENS IN PHASE 3', w / 2, h - 50);
-  });
-  const hp = plane(3.6, 3.98, hw, { transparent: true });
-  put(hp, 'future', 'south', 44.9, 2.6, 0.25);
-  animators.push(t => { hp.material.opacity = 0.85 + Math.sin(t * 5) * 0.08; });
+  // The Freedom Wall for this room is built by freedom.js.
 }
 
 function buildFinal() {

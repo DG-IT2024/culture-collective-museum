@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { H, EYE, ROOMS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
+import { initFreedom, open as openWall, refresh as refreshWall } from './freedom.js';
 import { lookFor, SKY, frameStyle, labelTexture, decorateExhibit, eraBanner, decorate, onEnterRoom, glasses } from './vibes.js';
 
 const DATA = window.CC_DATA;
@@ -201,6 +202,7 @@ function setState(s) {
   $('pause').classList.toggle('hidden', s !== 'paused');
   $('cardwrap').classList.toggle('hidden', s !== 'card');
   $('glasses-prompt').classList.toggle('hidden', s !== 'glasses');
+  $('wallwrap')?.classList.toggle('hidden', s !== 'wall');
   $('hud').classList.toggle('hidden', s === 'start');
   $('joy').classList.toggle('hidden', !(s === 'playing' && isTouch));
   $('lookhint').classList.toggle('hidden', !(s === 'playing' && isTouch));
@@ -221,7 +223,7 @@ $('btn-map').onclick = () => { unlock(); setState('paused'); };
 $('glasses-yes').onclick = () => { glasses.set(true); play(); };
 $('glasses-no').onclick = () => { glasses.set(false); play(); };
 $('btn-glasses').onclick = () => glasses.set(!glasses.on);
-const ui = { modal(name) { unlock(); setState(name); } };
+const ui = { modal(name) { unlock(); setState(name); }, play: () => play(), toast: (a, b) => toast(a, b) };
 
 document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && state === 'playing' && !isTouch) setState('paused'); });
 
@@ -257,6 +259,7 @@ $('card-close').onclick = play;
 function interact(obj) {
   const d = obj?.userData;
   if (d?.type === 'exhibit') openCard(d.ex);
+  else if (d?.type === 'wall') openWall(d.room);
 }
 
 // ---------------------------------------------------------------------------
@@ -344,7 +347,7 @@ function updateRoom(force) {
   currentRoom = r;
   $('room').innerHTML = `<b>${r.name}</b><span>${r.sub}</span>`;
   $('btn-glasses').classList.toggle('hidden', r.id !== 'future');
-  if (['past', 'present', 'future', 'final'].includes(r.id)) { if (prev?.id !== r.id) onEnterRoom(r.id); }
+  if (['past', 'present', 'future', 'final'].includes(r.id)) { if (prev?.id !== r.id) { onEnterRoom(r.id); if (r.id !== 'final') refreshWall(r.id); } }
   else toast(r.id === 'lobby' ? 'Culture Collective' : r.name, r.sub);
 }
 
@@ -387,6 +390,7 @@ renderer.setAnimationLoop(() => {
     $('crosshair').classList.toggle('on', !!d);
     $('hint').classList.toggle('hidden', !d);
     if (d?.type === 'exhibit') $('hint').textContent = `E · ${d.ex.item.title}`;
+    else if (d?.type === 'wall') $('hint').textContent = 'E · Freedom Wall: read & post';
   } else $('hint').classList.add('hidden');
 
   for (const a of animators) a(t, dt);
@@ -394,6 +398,7 @@ renderer.setAnimationLoop(() => {
 });
 
 decorate({ scene, animators, clickables, camera, ui });
+initFreedom({ scene, animators, clickables, ui, currentRoom: () => currentRoom?.id });
 
 if (isTouch) { $('controls-desktop').classList.add('hidden'); $('controls-touch').classList.remove('hidden'); }
 setState('start');
