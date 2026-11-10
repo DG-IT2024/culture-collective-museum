@@ -540,8 +540,10 @@ function buildFinal() {
     c.textAlign = 'center'; c.fillStyle = '#f3ead8'; c.font = '900 92px "Playfair Display"'; c.fillText('Salamat sa pagbisita!', w / 2, 170);
     c.fillStyle = '#c8a24f'; c.font = '600 26px Inter'; c.fillText('THANK YOU FOR VISITING CULTURE COLLECTIVE', w / 2, 230);
     c.fillStyle = '#e4d9c4'; c.font = '700 34px "Playfair Display"';
-    window.CC_DATA.site.curators.forEach((n, i) => c.fillText(n, w / 2 + (i % 2 ? 300 : -300), 330 + Math.floor(i / 2) * 80));
-    c.fillStyle = '#8a7a5c'; c.font = '600 22px Inter'; c.fillText('CURATORS', w / 2, h - 60);
+    const names = window.CC_DATA.site.curators;
+    if (names.length === 1) { c.font = '700 64px "Playfair Display"'; c.fillText(names[0], w / 2, 440); }
+    else names.forEach((n, i) => c.fillText(n, w / 2 + (i % 2 ? 300 : -300), 330 + Math.floor(i / 2) * 80));
+    c.fillStyle = '#8a7a5c'; c.font = '600 22px Inter'; c.fillText(names.length === 1 ? 'CURATOR' : 'CURATORS', w / 2, h - 60);
   });
   put(plane(9, 5.26, ty), 'final', 'west', 45, 3.1, 0.06);
 }

@@ -11,13 +11,7 @@ window.CC_DATA = {
    "Leave your thoughts on each room's Freedom Wall, and collect a stamp in your passport along the way."
   ],
   "curators": [
-   "Aguinaldo, Debbie",
-   "Bautista, Eldrianne Alyanna",
-   "Caballa, Dave Paulo",
-   "De Guzman, Daniel Ceasar",
-   "Giltendez, Danilo",
-   "Menzon, Christian Joseph",
-   "Sorilla, Briggs"
+   "Danilo Giltendez"
   ],
   "trivia": {
    "past": {
@@ -65,9 +59,9 @@ window.CC_DATA = {
        "year": "2001",
        "title": "EDSA Dos",
        "text": "A four-day political protest in the Philippines from January 17 to 20, 2001, that peacefully removed President Joseph Estrada from office.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-feelings-then-edsa-dos.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-affect-2",
@@ -75,9 +69,9 @@ window.CC_DATA = {
        "year": "2006",
        "title": "Southern Leyte mudslide",
        "text": "The entire village of Guinsaugon in Saint Bernard, Southern Leyte was buried by a mudslide. This happened on February 17, 2006, killing at least 1,126 people.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-feelings-then-guinsaugon.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-affect-3",
@@ -85,9 +79,9 @@ window.CC_DATA = {
        "year": "2009",
        "title": "Typhoon Ondoy",
        "text": "Severely affected over 9.3 million people and resulted in the loss of 956 lives, with over 700 injured and 84 persons missing. While the majority of deaths caused by tropical storm Ondoy were due to drowning, reported deaths during typhoon Pepeng were also due to landslides.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-feelings-then-ondoy.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-affect-4",
@@ -95,9 +89,9 @@ window.CC_DATA = {
        "year": "2009",
        "title": "The Maguindanao Massacre",
        "text": "In the darkest political violence in modern Philippine history, 58 people, including 32 journalists, were ambushed and murdered in Ampatuan, Maguindanao. The victims were part of a convoy filing a certificate of candidacy for Esmael Mangudadatu, who was challenging the entrenched local Ampatuan political dynasty.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-feelings-then-maguindanao.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-affect-5",
@@ -105,9 +99,9 @@ window.CC_DATA = {
        "year": "2010",
        "title": "Manila Hostage Crisis",
        "text": "Rolando Mendoza, a 55-year-old former senior inspector of the Philippine National Police (PNP), hijacked a Hong Thai Travel Services tourist bus at Rizal Park (commonly known as Luneta). The bus carried 25 people: 21 tourists and a tour guide from Hong Kong, along with four local Filipino crew members.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-feelings-then-hostage-crisis.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       }
      ]
     },
@@ -121,9 +115,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Fashion icons",
        "text": "Anne Curtis, Angel Locsin, Heart Evangelista, Kristine Hermosa, Bea Alonzo, Sarah Geronimo, Kris Aquino",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-body-then-fashion-icons.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-body-2",
@@ -131,9 +125,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Makeup",
        "text": "Thin arched eyebrows, lip gloss, frosted lipstick, pink/nude lipstick, black eyeliner, frosty eyeshadow, pink/peach blush, compact powder, mascara",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-body-then-makeup.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-body-3",
@@ -141,9 +135,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Clothing",
        "text": "Low-rise jeans, bootcut/flared jeans, skinny jeans, baby tees, tube tops, tank tops, graphic tees, cargo pants, denim skirts, leggings, cardigans, tracksuits",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-body-then-clothing.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-body-4",
@@ -151,9 +145,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Accessories",
        "text": "Butterfly clips, headbands, bandanas, chunky belts, hoop earrings, charm bracelets",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-body-then-accessories.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-body-5",
@@ -161,9 +155,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Hair",
        "text": "Side-swept bangs, straightened hair, layered cuts, highlights, spiky hair, ponytails",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-body-then-hair.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       }
      ]
     },
@@ -177,9 +171,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Pinoy Big Brother & Reality TV",
        "text": "The decade marked a shift from scripted soap operas to surveillance performance. Shows like Pinoy Big Brother and Starstruck \"democratized\" stardom. Everyday Filipinos became the \"performers,\" and the audience became active participants--directors, even--via SMS voting. It redefined local celebrity culture, turning unedited human emotion and behavior caught on camera into the nation's primary evening entertainment.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-performance-then-pbb.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-performance-2",
@@ -187,9 +181,9 @@ window.CC_DATA = {
        "year": "",
        "title": "SexBomb Girls & Noontime TV",
        "text": "Daytime television became a central stage for localized performance. The SexBomb Girls and their iconic songs dominated the sensory landscape. It was highly participatory and physical, and these dance crazes seamlessly transitioned from television screens into local barangay festivals, school talent shows and family gatherings.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-performance-then-sexbomb.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-performance-3",
@@ -197,9 +191,9 @@ window.CC_DATA = {
        "year": "",
        "title": "The Telefantasya Boom",
        "text": "There was a shift in trend from the highly-dramatized and syndicated telenovela to the \"telefantasya,\" with the main drivers being Mulawin and Encantadia. Such productions required high theatricality, complex world-building, heavy CGI and even more elaborate costumes. These blended traditional Filipino folklore with modern, high-budget media production, setting a new visiual standard for primetime storytelling in local pop culture.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-performance-then-telefantasya.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-performance-4",
@@ -207,9 +201,9 @@ window.CC_DATA = {
        "year": "",
        "title": "The Dancing Inmates",
        "text": "The Cebu Provincial Detention and Rehabilitation Center (CPDRC) inmates dancing to Michael Jackson's Thriller became one of the coutnry's first global viral internet sensations on YouTube. It showcased how structured, synchronized choreography could be used for rehabilitation, while proving that Filipino performance spaces were no longer confined to televisions tudios.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-performance-then-dancing-inmates.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "past-performance-5",
@@ -217,9 +211,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Pop Royalty Explosion",
        "text": "The late 2000s cemened the era of the multi-hyphenate \"Pop Royalty,\" exemplified by Sarah Geromino's record-breaking concerts and mainstream musical movies. Figures like her were the definitive \"celebrity,\" fusing Western pop-star showmanship with deap-seated Filipino romantic sentimentality, defining the standard for modern local entertainment.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/past/1-performance-then-sarah-geronimo.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       }
      ]
     }
@@ -240,9 +234,9 @@ window.CC_DATA = {
        "year": "2025",
        "title": "Midterm Elections & Duterte's ICC Arrest",
        "text": "The Philippine Midterm Elections and the March 2025 arrest of former President Rodrigo Duterte under an ICC warrant.\n\nIn March 2025, former President Rodrigo Duterte was arrested under an International Criminal Court (ICC) warrant for alleged crimes against humanity and transferred to The Hague.\n\nThis unprecedented arrest shattered the ruling Marcos-Duterte alliance and fueled intense nationwide polarization just weeks ahead of the May 2025 midterm elections. Consequently, the polls unfolded in a deeply volatile political climate marked by fierce partisan rivalries, public protests, and high emotional stakes for voters.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-feelings-now-midterms-icc.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-affect-2",
@@ -250,9 +244,9 @@ window.CC_DATA = {
        "year": "2025",
        "title": "Cebu Earthquake",
        "text": "A magnitude 6.9 earthquake struck Cebu, causing widespread destruction, deaths, landslides, displacement and prolonged disruption to communities. The disaster became a major shared national experience, particularly in Cebu and surrounding areas.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-feelings-now-cebu-earthquake.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-affect-3",
@@ -260,9 +254,9 @@ window.CC_DATA = {
        "year": "2026",
        "title": "Super El Niño",
        "text": "The constant feeling of dread and confusion as the public is forced to prepare for two opposite extremes at once.\n\nWhile it typically causes severe dry spells, droughts, and water supply cuts across the country, scientists warn that it creates a dual threat: even during peak dry conditions, it can still trigger episodes of intense monsoon rains, destructive super typhoons, and widespread flooding.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-feelings-now-super-el-nino.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-affect-4",
@@ -270,9 +264,9 @@ window.CC_DATA = {
        "year": "2023",
        "title": "Assassination of Gov. Roel Degamo",
        "text": "Degamo and eight others were killed when armed men attacked his residence during a public service activity. The incident was widely treated as politically motivated and revived concerns about political violence, private armed groups and the use of violence against political rivals.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-feelings-now-degamo.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-affect-5",
@@ -280,7 +274,7 @@ window.CC_DATA = {
        "year": "2026",
        "title": "Tacloban School Shooting",
        "text": "Two teenage students allegedly opened fire at San Jose National High School in Tacloban City, killing three students and injuring numerous others. The incident became a major national issue, prompting investigations and renewed concerns about school safety, youth violence and access to firearm",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-feelings-now-tacloban-school-shooting.jpg",
        "credit": "Photo courtesy RMN Tacloban, via Inquirer.net."
       }
@@ -296,9 +290,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Kathryn Bernardo",
        "text": "She can be considered the current mainstream queen.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-body-now-kathryn-bernardo.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-body-2",
@@ -306,9 +300,9 @@ window.CC_DATA = {
        "year": "",
        "title": "The “No-Brow” Look",
        "text": "Sometimes brows are concealed with makeup or bleached almost invisible, shifting focus to the eyes, lips, and skin glow. You will often see this when you go to EXPO in Cubao.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-body-now-no-brow.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-body-3",
@@ -316,9 +310,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Baggy Pants/Jeans",
        "text": "Loose, flowing, and relaxed, often high-waisted to elongate the legs. They create movement and a laid-back vibe, unlike the stiff, skinny jeans of the 2000s.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-body-now-baggy-jeans.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-body-4",
@@ -326,9 +320,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Piercings and Tattoos",
        "text": "In terms of body ornaments. These two are more accepted in today's age. Piercings are no longer just in the ears; you can see many younger people having septum piercings (positioned in the thin strip of tissue (the columella or \"sweet spot\") right below the hard cartilage dividing your nostrils). Same as with tattoos, tattoos are no longer seen the way they were seen before. Rather, it is being treated like a normal accessory.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-body-now-piercings-tattoos.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-body-5",
@@ -336,9 +330,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Mullet & Wolf Cut",
        "text": "A mullet is a hairstyle featuring short hair on the top and sides of the head and long hair at the back.\n\nWolf Cut / Shag Variations - layered, textured, with volume at the crown and wispy ends.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-body-now-hair.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       }
      ]
     },
@@ -352,9 +346,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Vloggers: Team Payaman",
        "text": "Team Payaman. Celebrity culture has shifted from television personalities to social-media creators. Ordinary Filipinos can now achieve fame through YouTube, TikTok and Facebook, with audiences actively participating through likes, comments, shares and subscriptions.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-performance-now-team-payaman.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-performance-2",
@@ -362,9 +356,9 @@ window.CC_DATA = {
        "year": "",
        "title": "BINI",
        "text": "Represents the modern generation of female pop and dance icons. Their choreography, music and performances influence youth culture and spread rapidly through social media, replacing the television-centered dance culture of groups such as SexBomb.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-performance-now-bini.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-performance-3",
@@ -372,9 +366,9 @@ window.CC_DATA = {
        "year": "",
        "title": "Crime Drama: Batang Quiapo",
        "text": "Batang Quiapo. A new breed of action-packed Filipino crime drama that combines crime, action, family conflict and social issues. Its long-running storyline and sustained popularity demonstrate that Filipinos continue to embrace serialized local dramas as a major source of shared entertainment.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-performance-now-batang-quiapo.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-performance-4",
@@ -382,9 +376,9 @@ window.CC_DATA = {
        "year": "",
        "title": "TikTok / Viral Video Culture",
        "text": "The viral phenomenon that once depended on early YouTube has become a normal part of Filipino digital culture. Ordinary people can now turn performances, dances, comedy and everyday moments into nationally or globally viewed content.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-performance-now-tiktok.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       },
       {
        "id": "present-performance-5",
@@ -392,9 +386,9 @@ window.CC_DATA = {
        "year": "",
        "title": "P-Pop: SB19",
        "text": "SB19. SB19 represents the modern Filipino pop-star model, combining music, choreography, fashion, fandom and social media. P-pop has also expanded the reach of Filipino entertainment to international audiences.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/present/2-performance-now-sb19.jpg",
-       "credit": "Image collected by the curators for this class exhibit."
+       "credit": "Image collected by the curator for this class exhibit."
       }
      ]
     }
@@ -415,7 +409,7 @@ window.CC_DATA = {
        "year": "2030",
        "title": "Judicial Reform & Constitutional Crisis",
        "text": "The fallout from the 2025 ICC arrest culminates in a restructuring of the Philippine judicial system. Possible bureaucractic gridlock, as institutional factions debate state sovereignty against international law, reshaping executive power and campaign strategies for future national elections.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-feelings-2030-judicial-reform-crisis.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -425,7 +419,7 @@ window.CC_DATA = {
        "year": "2030",
        "title": "Red-Zone Mandates",
        "text": "Following these horrific natural disasters, the government may permanently lock down and outlaw habitation in these high-risk zones. The state may enforce the mandatory, automated relocation of millions into \"climate resettlement towns,\" which may spark fierce debate over the rights on ancestral lands and triggering a historic urban-rural migration crisis.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-feelings-2030-red-zone-resettlement.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -435,7 +429,7 @@ window.CC_DATA = {
        "year": "2030",
        "title": "Climate-Resistant Agriculture",
        "text": "The erratic cycle of extreme droughts and super typhoons will act as the climate baseline, forcing the agricultural sector to adapt by using bio-engineered weather resistant crops, and similar technologies to mitigate national food insecurity or prevent a possible crisis.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-feelings-2030-climate-resistant-agriculture.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -445,7 +439,7 @@ window.CC_DATA = {
        "year": "2030",
        "title": "Private Army Crackdown & Automated Security",
        "text": "Persistent political assassinations may trigger an aggressive, digitized crackdown on regional warlords. The state will deploy advanced tracking technology, also implementing strict financial surveillance to dismantle illicit funding networks. This will shift how political dynasties maintain or lose local control.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-feelings-2030-private-army-crackdown.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -455,7 +449,7 @@ window.CC_DATA = {
        "year": "2030",
        "title": "The Rise of Secure Communities",
        "text": "In response to rising urban anxieties and \"American-style\" localized gun violence (especially school shootings), public spaces may become heavily privatized and guarded. Gated communities, malls and schools may implement strict biometric surveillence, increasing a sense of isolation among the youth.",
-       "curator": "Menzon, Christian Joseph",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-feelings-2030-secure-communities.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       }
@@ -471,7 +465,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Social Media Personalities or Vloggers",
        "text": "By 2030, social media personalities and content creators may become even more influential than traditional television celebrities. This trend is already visible today, as many public figures gain popularity through online platforms. Ivana Alawi, for example, built much of her fame through social media, showing how digital platforms can create stars with massive audiences.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-body-2030-social-media-personality-ivana-alawi.jpg",
        "credit": "Screengrab from YouTube/Ivana Alawi (youtube.com/watch?v=aT1brvgJDfo), shown as a present-day example of the prediction."
       },
@@ -481,7 +475,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Natural Look",
        "text": "Current makeup trends often experiment with bold and unconventional styles. However, by 2030, there may be a stronger preference for a more natural appearance. Makeup is likely to focus on enhancing natural features and creating a fresh, effortless look rather than appearing overly noticeable.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-body-2030-natural-makeup.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -491,7 +485,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Skinny Jeans",
        "text": "Fashion trends tend to move in cycles, making it likely that skinny jeans will return to popularity by 2030. Baggy pants were widely worn before the 2000s, faded in popularity, and eventually became fashionable again. Following this pattern, skinny jeans could make a comeback as styles continue to rotate over time.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-body-2030-skinny-jeans.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -501,7 +495,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Smart Accessories",
        "text": "Technology is becoming increasingly integrated into everyday fashion. Smartwatches are already common, while companies like Samsung have introduced smart rings and Meta has developed smart glasses. By 2030, even more advanced smart accessories may emerge, offering new ways to combine convenience, technology, and personal style.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-body-2030-smart-accessories.jpg",
        "credit": "Left: Ray-Ban Meta smart glasses, photo by CCadio, CC BY 4.0. Right: Samsung Galaxy Ring, photo by Miyako Fujimiya, CC BY 4.0. Both via Wikimedia Commons, resized and combined."
       },
@@ -511,7 +505,7 @@ window.CC_DATA = {
        "year": "",
        "title": "One-side or Side-swept Bangs (Emo look)",
        "text": "Hairstyles also follow repeating trends, and side-swept bangs could become popular again by 2030. Similar to the way fashion trends reappear after several years, this iconic emo-inspired hairstyle may return as younger generations rediscover and reinterpret past styles.",
-       "curator": "Caballa, Dave Paulo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-body-2030-side-swept-bangs.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       }
@@ -527,7 +521,7 @@ window.CC_DATA = {
        "year": "",
        "title": "AI-Assisted Creator",
        "text": "Personal performance may move beyond traditional creators into AI-assisted and virtual personalities. Audiences could interact with performers in real time through immersive platforms, blurring the line between viewer, creator and performer.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-performance-2030-ai-assisted-creator.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -537,7 +531,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Virtual P-Pop Performance Groups",
        "text": "Filipino pop performance could increasingly combine human performers with virtual avatars, AI-generated choreography and immersive concerts. Dance culture may become even more collaborative, with audiences participating in and modifying choreography rather than simply copying it.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-performance-2030-virtual-ppop-group.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -547,7 +541,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Immersive Filipino Storyworlds",
        "text": "Filipino storytelling could evolve from simply watching a teleserye into entering an interactive storyworld through VR/AR. Viewers could explore Filipino mythology, characters and locations and potentially influence how the story unfolds.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-performance-2030-immersive-storyworlds.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -557,7 +551,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Immersive Participatory Performance",
        "text": "Viral dances could evolve into AR/VR-based collective performances, where people in different locations perform together virtually. Instead of one person copying a viral dance, thousands of participants could appear as part of the same digital performance.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-performance-2030-participatory-avatar-dance.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       },
@@ -567,7 +561,7 @@ window.CC_DATA = {
        "year": "",
        "title": "Global Filipino Entertainment Ecosystems",
        "text": "Filipino performers could operate as multimedia entertainment brands, combining live performance, streaming, gaming, virtual concerts, AI-generated content and global fan communities. The distinction between singer, actor, influencer and digital performer may become increasingly blurred.",
-       "curator": "Giltendez, Danilo",
+       "curator": "Danilo Giltendez",
        "img": "assets/future/3-performance-2030-global-entertainment-ecosystem.jpg",
        "credit": "Image generated with AI (Canva) for this exhibition. All people shown are invented."
       }

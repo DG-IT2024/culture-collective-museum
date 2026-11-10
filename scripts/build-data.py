@@ -30,9 +30,9 @@ ERAS = [  # id, folder, years, room name
 ]
 
 ASPECTS = [  # key, label, image subfolder, curator, columns for (past, present, future)
-    ("affect", "Affect, Senses & Feelings", "Affect, senses and feelings", "Menzon, Christian Joseph", "EFG"),
-    ("body", "Body & Self-Image", "Body and Self-image", "Caballa, Dave Paulo", "HIJ"),
-    ("performance", "Performance", "Performance", "Giltendez, Danilo", "KLM"),
+    ("affect", "Affect, Senses & Feelings", "Affect, senses and feelings", "Danilo Giltendez", "EFG"),
+    ("body", "Body & Self-Image", "Body and Self-image", "Danilo Giltendez", "HIJ"),
+    ("performance", "Performance", "Performance", "Danilo Giltendez", "KLM"),
 ]
 
 # Image file (without .jpg) for each workbook row, in row order 9-13.
@@ -66,8 +66,8 @@ IMAGES = {
 }
 
 DEFAULT_CREDIT = {
-    "past": "Image collected by the curators for this class exhibit.",
-    "present": "Image collected by the curators for this class exhibit.",
+    "past": "Image collected by the curator for this class exhibit.",
+    "present": "Image collected by the curator for this class exhibit.",
     "future": "Image generated with AI (Canva) for this exhibition. All people shown are invented.",
 }
 CREDITS = {  # from the image folders' notes and future/SOURCES-AND-CREDITS.md
@@ -105,10 +105,7 @@ SITE = {
         "In every room, explore how Filipinos felt, how they saw themselves, and how they performed and were entertained.",
         "Leave your thoughts on each room's Freedom Wall, and collect a stamp in your passport along the way.",
     ],
-    "curators": [
-        "Aguinaldo, Debbie", "Bautista, Eldrianne Alyanna", "Caballa, Dave Paulo", "De Guzman, Daniel Ceasar",
-        "Giltendez, Danilo", "Menzon, Christian Joseph", "Sorilla, Briggs",
-    ],
+    "curators": ["Danilo Giltendez"],
     # Correct answer is listed first; the app shuffles the choices.
     "trivia": {
         "past": {"q": "Which 2001 event peacefully removed President Joseph Estrada from office?",

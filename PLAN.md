@@ -22,7 +22,7 @@ A 3D walk-through digital museum of Philippine popular culture (MO-HUM080 · H11
 | Now vibe | TikTok neon (pink/cyan) + P-pop concert stage |
 | 2030 vibe | Floating holo frames, central hologram, **smart-glasses prompt** on entering → scripted guide **DIWA** (friendly Taglish) |
 | Final room | Phone evolution on **rising pedestals** (Nokia 3310 → smartphone → smart glasses), "Stand here" floor marker + neon "Culture Collective" sign, passport check-out desk, "Salamat sa pagbisita!" thank-you wall, short credits corridor back to the lobby |
-| Lobby | Start screen = logo + **Enter** only. Turning 3D gold/cream logo centerpiece. Side wall: "Curated by" with 7 plaques, all titled **Curator**. Opposite wall: welcome text |
+| Lobby | Start screen = logo + **Enter** only. Turning 3D gold/cream logo centerpiece. Side wall: "Curated by" panel with the curator statue. Opposite wall: welcome text |
 | Brand | Modern gallery: cream/charcoal + gold, serif logo |
 | Passport | One trivia question per era room (near its exit) earns its stamp. All 3 stamps → shareable passport card image with nickname |
 | Extras | Mini-map with tap-to-teleport, photo button (screenshot with Culture Collective frame) |
@@ -44,7 +44,7 @@ A 3D walk-through digital museum of Philippine popular culture (MO-HUM080 · H11
 - Now: Which group represents today's female pop and dance icons, taking over from the TV-centered dance culture of groups like SexBomb? **BINI ✓** · SB19 · Team Payaman · The Dancing Inmates
 - 2030: Because fashion moves in cycles, which item does the museum predict will return by 2030? **Skinny jeans ✓** · Butterfly clips · Tube tops · Cargo pants
 
-**Curators** (plaques say "Curator"): Aguinaldo, Debbie · Bautista, Eldrianne Alyanna · Caballa, Dave Paulo · De Guzman, Daniel Ceasar · Giltendez, Danilo · Menzon, Christian Joseph · Sorilla, Briggs
+**Curator:** Danilo Giltendez (shown as a statue in the lobby)
 
 ## Floor plan (loop)
 
@@ -96,7 +96,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - Loop geometry for the 6 spaces (Lobby, 3 era rooms, Final, corridor): walls, floors, ceilings and doorways, with collision.
 - Controls: WASD/mouse/pointer lock, plus phone joystick, drag-look and tap.
 - All 45 exhibits on their walls (left/right/back), with wall labels and click-to-open cards (prev/next within the room).
-- Lobby: start screen (logo + Enter), 3D logo centerpiece, welcome wall and curator plaque row.
+- Lobby: start screen (logo + Enter), 3D logo centerpiece, welcome wall and curator statue.
 - HUD: room name, crosshair and aim hint.
 - **Done when:** you can walk the whole loop on a laptop and a phone and open every exhibit.
 
