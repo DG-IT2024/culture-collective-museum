@@ -176,3 +176,5 @@ a.btn { display: inline-block; text-decoration: none; }
 
 #btn-sound.on { border-color: var(--gold); color: var(--gold); }
 .btn.sound-toggle.on { border-color: var(--gold, #c9a45c); color: var(--gold, #c9a45c); }
+.start-sound { justify-content: center; margin-top: 2px; } .start-sound .btn { padding: 6px 16px; font-size: 13px; }
+#music-hint { margin: 8px 0 0; color: var(--gold); font-size: 13px; }

@@ -1,18 +1,21 @@
 // Phase 5: original room ambience made with the Web Audio API (no recorded songs).
 // Starts with the Enter click (unless turned off before). Each room has its own layer; layers crossfade.
-//   lobby: ElevenLabs lounge music (assets/audio/lobby.mp3)
+//   start screen: ElevenLabs intro music (assets/audio/intro.mp3, take 1)
+//   lobby: ElevenLabs lounge music (assets/audio/lobby.mp3, take 3)
 //   lobby / final / corridor: warm gallery pad
 //   2000s: phone-style beep melodies + a soft dial-up modem texture
 //   Now: muffled concert beat heard "through the wall"
 //   2030: synth drone with shimmering pings
 // Doorway time-warps play a whoosh.
 
-let ac = null, master = null, noiseBuf = null, enabled = false, room = 'lobby';
-// Lobby music (ElevenLabs, OPM-inspired lounge): decoded once and looped gaplessly; fades out in other rooms.
-const MUSIC_URL = 'assets/audio/lobby.mp3', MUSIC_LEVEL = 0.75;
-let music = null; // { gain, src }
+let ac = null, master = null, noiseBuf = null, enabled = false, room = 'start';
+// ElevenLabs music (OPM-inspired lounge): each track is decoded once and looped gaplessly.
+// 'intro' plays on the start screen, 'lobby' in the lobby; they crossfade, and fade out in other rooms.
+const TRACKS = { intro: 'assets/audio/intro.mp3', lobby: 'assets/audio/lobby.mp3' };
+const MUSIC_OF = { start: 'intro', lobby: 'lobby' }, MUSIC_LEVEL = 0.75;
+const music = {}; // name -> { gain, src }
 const layers = {};
-const LAYER_OF = { lobby: 'gallery', final: 'gallery', corridorV: 'gallery', corridorH: 'gallery', past: 'past', present: 'present', future: 'future' };
+const LAYER_OF = { start: null, lobby: 'gallery', final: 'gallery', corridorV: 'gallery', corridorH: 'gallery', past: 'past', present: 'present', future: 'future' };
 const LEVEL = { gallery: 0.5, past: 0.55, present: 0.6, future: 0.6 };
 
 function noise() {
@@ -90,12 +93,15 @@ function ensure() {
   master = ac.createGain(); master.gain.value = 0.8;
   const comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(ac.destination);
   for (const n of ['gallery', 'past', 'present', 'future']) layers[n] = makeLayer(n);
-  music = { gain: ac.createGain(), src: null };
-  music.gain.gain.value = 0; music.gain.connect(master);
-  fetch(MUSIC_URL).then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status))
-    .then(b => ac.decodeAudioData(b))
-    .then(buf => { const s = ac.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(music.gain); s.start(); music.src = s; mix(); })
-    .catch(e => console.warn('Lobby music unavailable:', e));
+  ac.onstatechange = () => document.dispatchEvent(new Event('cc-sound'));
+  for (const [name, url] of Object.entries(TRACKS)) {
+    const m = music[name] = { gain: ac.createGain(), src: null };
+    m.gain.gain.value = 0; m.gain.connect(master);
+    fetch(url).then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status))
+      .then(b => ac.decodeAudioData(b))
+      .then(buf => { const s = ac.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(m.gain); s.start(); m.src = s; mix(); })
+      .catch(e => console.warn(`Music "${name}" unavailable:`, e));
+  }
   // Event scheduler: looks ahead a little and schedules the active layer's sounds.
   setInterval(() => {
     if (!enabled) return;
@@ -110,13 +116,16 @@ function ensure() {
 function mix() {
   if (!ac) return;
   const t = ac.currentTime, active = LAYER_OF[room];
-  const musicHere = enabled && room === 'lobby' && !!music?.src;
+  const track = enabled ? MUSIC_OF[room] : null, musicHere = !!music[track]?.src;
   for (const [n, L] of Object.entries(layers)) {
     L.out.gain.cancelScheduledValues(t);
     const on = enabled && n === active && !(n === 'gallery' && musicHere); // the music replaces the lobby pad
     L.out.gain.setTargetAtTime(on ? LEVEL[n] : 0, t, 0.6);
   }
-  if (music) { music.gain.gain.cancelScheduledValues(t); music.gain.gain.setTargetAtTime(musicHere ? MUSIC_LEVEL : 0, t, musicHere ? 0.8 : 0.5); }
+  for (const [name, m] of Object.entries(music)) {
+    const on = name === track;
+    m.gain.gain.cancelScheduledValues(t); m.gain.gain.setTargetAtTime(on ? MUSIC_LEVEL : 0, t, on ? 0.8 : 0.5);
+  }
 }
 
 export function setRoom(id) { room = id || 'lobby'; mix(); }
@@ -141,4 +150,7 @@ export function setEnabled(on) {
 export const isEnabled = () => enabled;
 // Sound starts with the Enter click unless the visitor turned it off before.
 export function wantsSound() { try { return localStorage.getItem('cc.sound') !== '0'; } catch { return true; } }
-export const _debug = () => ({ ctx: ac?.state, room, enabled, gains: Object.fromEntries(Object.entries(layers).map(([n, L]) => [n, +L.out.gain.value.toFixed(3)])), music: music ? { loaded: !!music.src, gain: +music.gain.gain.value.toFixed(3) } : null });
+export const _debug = () => ({ ctx: ac?.state, room, enabled, gains: Object.fromEntries(Object.entries(layers).map(([n, L]) => [n, +L.out.gain.value.toFixed(3)])), music: Object.fromEntries(Object.entries(music).map(([n, m]) => [n, { loaded: !!m.src, gain: +m.gain.gain.value.toFixed(3) }])) });
+// Browsers keep audio suspended until the visitor interacts with the page; call this from any click/tap/key.
+export function resume() { if (enabled && ac && ac.state !== 'running') ac.resume(); }
+export const isBlocked = () => enabled && (!ac || ac.state !== 'running');

@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { H, EYE, ROOMS, DOORS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, walkable, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
-import { setRoom as setSoundRoom, whoosh, setEnabled as setSound, isEnabled as soundOn, wantsSound } from './audio.js';
+import { setRoom as setSoundRoom, whoosh, setEnabled as setSound, isEnabled as soundOn, wantsSound, resume as resumeSound, isBlocked as soundBlocked } from './audio.js';
 import { initExtras, openTrivia, openPassport, takePhoto } from './extras.js';
 import { initFreedom, open as openWall, refresh as refreshWall } from './freedom.js';
 import { lookFor, SKY, frameStyle, labelTexture, decorateExhibit, eraBanner, decorate, onEnterRoom, glasses } from './vibes.js';
@@ -218,6 +218,14 @@ teleport('lobby');
 $('btn-enter').onclick = () => { if (wantsSound()) setSound(true); play(); updateRoom(true); };
 $('btn-sound').onclick = () => setSound(!soundOn());
 $('btn-sound-pause').onclick = () => setSound(!soundOn());
+$('btn-sound-start').onclick = () => setSound(!soundOn());
+// Start-screen music: try to play right away; if the browser blocks autoplay, the first click/tap/key starts it.
+setSoundRoom('start');
+const musicHint = () => $('music-hint').classList.toggle('hidden', !(state === 'start' && soundBlocked()));
+document.addEventListener('cc-sound', musicHint);
+if (wantsSound()) setSound(true);
+setTimeout(musicHint, 400);
+for (const ev of ['pointerdown', 'keydown', 'touchstart']) addEventListener(ev, () => { resumeSound(); setTimeout(musicHint, 50); }, { capture: true, passive: true });
 $('btn-resume').onclick = play;
 $('btn-map').onclick = () => { unlock(); setState('paused'); };
 // Smart glasses (2030): asked once on entering the room; the HUD button toggles them later.
