@@ -171,10 +171,12 @@ progress();
 
   // Curators (east wall, away from the corridor door at z 67–73).
   const cur = canvasTex(1100, 1000, (c, w, h) => {
-    c.fillStyle = '#ebe3d4'; c.fillRect(0, 0, w, h);
+    // Same look as the welcome wall: dark panel with a gold inner border.
+    c.fillStyle = '#1f1b17'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = '#c8a24f'; c.lineWidth = 4; c.strokeRect(18, 18, w - 36, h - 36);
     c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.fillStyle = '#1f1b17'; c.font = '900 64px "Playfair Display", Georgia, serif'; c.fillText('Curated by', w / 2, 90);
-    c.fillStyle = '#8a7a5c'; c.font = '600 20px Inter, sans-serif'; c.fillText(site.school.toUpperCase(), w / 2, 150);
+    c.fillStyle = '#f3ead8'; c.font = '900 64px "Playfair Display", Georgia, serif'; c.fillText('Curated by', w / 2, 90);
+    c.fillStyle = '#c8a24f'; c.font = '600 20px Inter, sans-serif'; c.fillText(site.school.toUpperCase(), w / 2, 150);
     site.curators.forEach((name, i) => {
       const col = i < 4 ? 0 : 1, row = i < 4 ? i : i - 4;
       const x = col === 0 ? w * 0.27 : w * 0.73, y = 260 + row * 175 + (col === 1 ? 88 : 0);
@@ -182,13 +184,13 @@ progress();
       const g = c.createLinearGradient(x - pw / 2, 0, x + pw / 2, 0);
       g.addColorStop(0, '#b8913f'); g.addColorStop(0.5, '#e6cb84'); g.addColorStop(1, '#b8913f');
       c.fillStyle = g; roundRect(c, x - pw / 2, y - ph / 2, pw, ph, 10); c.fill();
-      c.strokeStyle = '#7d6024'; c.lineWidth = 3; c.stroke();
+      c.strokeStyle = '#e6cb84'; c.lineWidth = 2; c.stroke();
       c.fillStyle = '#2a2010'; c.font = '700 30px "Playfair Display", Georgia, serif'; c.fillText(name, x, y - 14);
       c.font = '600 18px Inter, sans-serif'; c.fillStyle = '#4a3a18'; c.fillText('CURATOR', x, y + 28);
     });
   });
-  const cw = new THREE.Mesh(new THREE.PlaneGeometry(7.7, 7), new THREE.MeshBasicMaterial({ map: cur }));
-  placeOnWall(cw, 'lobby', 'east', 82, 3.3);
+  const cw = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 6), new THREE.MeshBasicMaterial({ map: cur }));
+  placeOnWall(cw, 'lobby', 'east', 82, 3.3); // 0.3–6.3 m, under the 6.5 m ceiling
 }
 
 // ---------------------------------------------------------------------------
