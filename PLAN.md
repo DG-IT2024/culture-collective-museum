@@ -114,7 +114,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - In-world post form (nickname optional, 200 chars) and per-era rendering: Friendster testimonial boxes, TikTok comment column, hologram bubbles. Click a post to read it or report it.
 - **Done when:** a post made in one browser appears in another.
 
-## Phase 4 · Passport, mini-map, photo (≈1 h)
+## Phase 4 · Passport, mini-map, photo (≈1 h) ✅ done
 - Trivia stand near each era room's exit. Correct (or second try) stamps the passport. A passport chip appears in the HUD.
 - Final room check-out desk: asks for a nickname → generates the **passport card PNG** (3 stamps + nickname + Culture Collective branding) for download.
 - Mini-map overlay with the current position and tap-to-teleport.

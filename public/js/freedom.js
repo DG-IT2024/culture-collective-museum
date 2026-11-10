@@ -136,7 +136,7 @@ function remember(id) { try { const s = reportedIds(); s.add(id); localStorage.s
 const $ = id => document.getElementById(id);
 function buildPanel() {
   const wrap = document.createElement('div');
-  wrap.id = 'wallwrap'; wrap.className = 'overlay hidden';
+  wrap.id = 'wallwrap'; wrap.className = 'overlay hidden'; wrap.dataset.state = 'wall';
   wrap.innerHTML = `
     <div class="panel wallpanel" role="dialog" aria-modal="true" aria-labelledby="wall-title">
       <p class="kicker" id="wall-kicker"></p>

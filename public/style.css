@@ -146,3 +146,30 @@ kbd { font: 11px/1 Inter, sans-serif; border: 1px solid var(--line); border-bott
 #wallwrap[data-era="future"] .btn.ghost { background: transparent; color: #7df9ff; border-color: rgba(0,229,255,.5); }
 #wallwrap[data-era="future"] .post { background: rgba(0,229,255,.06); border-color: rgba(0,229,255,.35); border-radius: 22px; }
 #wallwrap[data-era="future"] .post b { color: #7df9ff; font-family: Orbitron, sans-serif; font-size: 13px; letter-spacing: .08em; }
+
+/* Phase 4: passport chip, trivia, passport card, photo, maps */
+#passport-chip { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 12px; background: rgba(0,0,0,.5); border: 1px solid var(--line); font-size: 13px; }
+#passport-chip i { width: 12px; height: 12px; border-radius: 50%; border: 2px dashed rgba(243,234,216,.5); }
+#passport-chip i.on[data-era="past"] { background: #ff5fb8; border: 2px solid #ff5fb8; }
+#passport-chip i.on[data-era="present"] { background: #fe2c55; border: 2px solid #25f4ee; }
+#passport-chip i.on[data-era="future"] { background: #00e5ff; border: 2px solid #00e5ff; }
+#minimap { position: absolute; right: 16px; top: max(64px, calc(env(safe-area-inset-top) + 50px)); width: 104px; height: 180px; pointer-events: auto; cursor: pointer; border-radius: 10px; }
+#bigmap { display: block; width: 208px; height: 360px; margin: 14px auto 4px; cursor: pointer; border-radius: 12px; }
+@media (max-width: 520px) { #minimap { width: 78px; height: 135px; } #tools { flex-wrap: wrap; justify-content: flex-end; max-width: 60%; } #passport-chip b { display: none; } }
+.trivia-panel h2 { margin-bottom: 18px; }
+.choices { display: grid; gap: 10px; }
+.choice { text-align: left; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.05); color: var(--ink); font-weight: 600; }
+.choice:hover:not(:disabled) { border-color: var(--gold); }
+.choice.right { background: rgba(70,190,110,.25); border-color: #46be6e; }
+.choice.wrong { background: rgba(230,80,80,.2); border-color: #e65050; }
+.feedback { min-height: 24px; color: var(--muted); }
+#trivia-overlay[data-era="past"] .panel { border-color: #ff5fb8; } #trivia-overlay[data-era="past"] .kicker { color: #ff5fb8; }
+#trivia-overlay[data-era="present"] .panel { border-color: #fe2c55; } #trivia-overlay[data-era="present"] .kicker { color: #25f4ee; }
+#trivia-overlay[data-era="future"] .panel { border-color: #00e5ff; } #trivia-overlay[data-era="future"] .kicker { color: #7df9ff; }
+.stamplist { list-style: none; padding: 0; display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); }
+.stamplist li.on { color: var(--gold); font-weight: 700; }
+#passport-form input { width: 100%; font: inherit; color: var(--ink); background: rgba(255,255,255,.06); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+#passport-img { display: block; width: min(320px, 100%); margin: 16px auto 0; border-radius: 10px; }
+a.btn { display: inline-block; text-decoration: none; }
+.photo-panel { width: min(900px, 100%); }
+#photo-img { display: block; width: 100%; border-radius: 8px; margin-top: 6px; }

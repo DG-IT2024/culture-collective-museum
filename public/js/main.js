@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { H, EYE, ROOMS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
+import { initExtras, openTrivia, openPassport, takePhoto } from './extras.js';
 import { initFreedom, open as openWall, refresh as refreshWall } from './freedom.js';
 import { lookFor, SKY, frameStyle, labelTexture, decorateExhibit, eraBanner, decorate, onEnterRoom, glasses } from './vibes.js';
 
@@ -198,11 +199,7 @@ const keys = {};
 
 function setState(s) {
   state = s;
-  $('start').classList.toggle('hidden', s !== 'start');
-  $('pause').classList.toggle('hidden', s !== 'paused');
-  $('cardwrap').classList.toggle('hidden', s !== 'card');
-  $('glasses-prompt').classList.toggle('hidden', s !== 'glasses');
-  $('wallwrap')?.classList.toggle('hidden', s !== 'wall');
+  document.querySelectorAll('.overlay[data-state]').forEach(el => el.classList.toggle('hidden', el.dataset.state !== s));
   $('hud').classList.toggle('hidden', s === 'start');
   $('joy').classList.toggle('hidden', !(s === 'playing' && isTouch));
   $('lookhint').classList.toggle('hidden', !(s === 'playing' && isTouch));
@@ -260,6 +257,8 @@ function interact(obj) {
   const d = obj?.userData;
   if (d?.type === 'exhibit') openCard(d.ex);
   else if (d?.type === 'wall') openWall(d.room);
+  else if (d?.type === 'trivia') openTrivia(d.era);
+  else if (d?.type === 'passport') openPassport();
 }
 
 // ---------------------------------------------------------------------------
@@ -268,6 +267,7 @@ function interact(obj) {
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (state === 'playing' && e.code === 'KeyE') interact(target);
+  if (state === 'playing' && e.code === 'KeyP') takePhoto();
   if (e.code === 'KeyM') { if (state === 'playing') { unlock(); setState('paused'); } else if (state === 'paused') play(); }
   if (state === 'card') {
     if (e.code === 'ArrowRight') stepCard(1);
@@ -391,6 +391,8 @@ renderer.setAnimationLoop(() => {
     $('hint').classList.toggle('hidden', !d);
     if (d?.type === 'exhibit') $('hint').textContent = `E · ${d.ex.item.title}`;
     else if (d?.type === 'wall') $('hint').textContent = 'E · Freedom Wall: read & post';
+    else if (d?.type === 'trivia') $('hint').textContent = 'E · Answer trivia for a passport stamp';
+    else if (d?.type === 'passport') $('hint').textContent = 'E · Passport check-out';
   } else $('hint').classList.add('hidden');
 
   for (const a of animators) a(t, dt);
@@ -399,6 +401,8 @@ renderer.setAnimationLoop(() => {
 
 decorate({ scene, animators, clickables, camera, ui });
 initFreedom({ scene, animators, clickables, ui, currentRoom: () => currentRoom?.id });
+initExtras({ scene, animators, clickables, ui, camera, renderer, teleport, getYaw: () => yaw,
+  renderNow: () => renderer.render(scene, camera), currentRoom: () => currentRoom?.id || 'lobby', currentRoomName: () => currentRoom?.name || 'Lobby' });
 
 if (isTouch) { $('controls-desktop').classList.add('hidden'); $('controls-touch').classList.remove('hidden'); }
 setState('start');
