@@ -126,7 +126,7 @@ progress();
 });
 
 // ---------------------------------------------------------------------------
-// Lobby: rotating logo, welcome wall, curators
+// Lobby: rotating logo, welcome wall, curator statue
 // ---------------------------------------------------------------------------
 {
   const cx = 13, cz = 75;
@@ -169,28 +169,80 @@ progress();
   const ww = new THREE.Mesh(new THREE.PlaneGeometry(8.4, 6), new THREE.MeshBasicMaterial({ map: welcome }));
   placeOnWall(ww, 'lobby', 'west', 75, 3.2);
 
-  // Curators (east wall, away from the corridor door at z 67–73).
-  const cur = canvasTex(1100, 1000, (c, w, h) => {
-    // Same look as the welcome wall: dark panel with a gold inner border.
-    c.fillStyle = '#1f1b17'; c.fillRect(0, 0, w, h);
-    c.strokeStyle = '#c8a24f'; c.lineWidth = 4; c.strokeRect(18, 18, w - 36, h - 36);
-    c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.fillStyle = '#f3ead8'; c.font = '900 64px "Playfair Display", Georgia, serif'; c.fillText('Curated by', w / 2, 90);
-    c.fillStyle = '#c8a24f'; c.font = '600 20px Inter, sans-serif'; c.fillText(site.school.toUpperCase(), w / 2, 150);
-    site.curators.forEach((name, i) => {
-      const col = i < 4 ? 0 : 1, row = i < 4 ? i : i - 4;
-      const x = col === 0 ? w * 0.27 : w * 0.73, y = 260 + row * 175 + (col === 1 ? 88 : 0);
-      const pw = 440, ph = 130;
-      const g = c.createLinearGradient(x - pw / 2, 0, x + pw / 2, 0);
+  // Curator (east wall, away from the corridor door at z 67–73): one marble statue on a plinth.
+  {
+    const curator = { name: 'Danilo Giltendez', role: 'Curator' };
+    const sx = 24.0, sz = 82;
+    const marble = new THREE.MeshStandardMaterial({ color: '#ece6da', roughness: 0.35, metalness: 0.05 });
+    const stone = new THREE.MeshStandardMaterial({ color: '#d6cebf', roughness: 0.5 });
+    const gold = new THREE.MeshStandardMaterial({ color: '#c8a24f', metalness: 0.7, roughness: 0.3 });
+    const statue = new THREE.Group(); // built facing local +z, turned to face into the lobby (-x)
+    const add = (geo, mat, x, y, z, rx = 0, ry = 0, rz = 0, s) => {
+      const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz);
+      if (s) m.scale.set(...s); statue.add(m); return m;
+    };
+    // Plinth: base, block, cap, with a gold name plate on the front.
+    add(new THREE.BoxGeometry(1.25, 0.1, 1.25), stone, 0, 0.05, 0);
+    add(new THREE.BoxGeometry(1.0, 0.9, 1.0), stone, 0, 0.55, 0);
+    add(new THREE.BoxGeometry(1.15, 0.1, 1.15), stone, 0, 1.05, 0);
+    const plate = canvasTex(600, 260, (c, w, h) => {
+      const g = c.createLinearGradient(0, 0, w, 0);
       g.addColorStop(0, '#b8913f'); g.addColorStop(0.5, '#e6cb84'); g.addColorStop(1, '#b8913f');
-      c.fillStyle = g; roundRect(c, x - pw / 2, y - ph / 2, pw, ph, 10); c.fill();
-      c.strokeStyle = '#e6cb84'; c.lineWidth = 2; c.stroke();
-      c.fillStyle = '#2a2010'; c.font = '700 30px "Playfair Display", Georgia, serif'; c.fillText(name, x, y - 14);
-      c.font = '600 18px Inter, sans-serif'; c.fillStyle = '#4a3a18'; c.fillText('CURATOR', x, y + 28);
+      c.fillStyle = g; roundRect(c, 6, 6, w - 12, h - 12, 14); c.fill();
+      c.strokeStyle = '#7a5f24'; c.lineWidth = 3; roundRect(c, 20, 20, w - 40, h - 40, 8); c.stroke();
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = '#2a2010'; c.font = '700 54px "Playfair Display", Georgia, serif'; c.fillText(curator.name, w / 2, h / 2 - 22);
+      c.fillStyle = '#4a3a18'; c.font = '600 28px Inter, sans-serif'; c.fillText(curator.role.toUpperCase(), w / 2, h / 2 + 44);
     });
-  });
-  const cw = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 6), new THREE.MeshBasicMaterial({ map: cur }));
-  placeOnWall(cw, 'lobby', 'east', 82, 3.3); // 0.3–6.3 m, under the 6.5 m ceiling
+    add(new THREE.PlaneGeometry(0.8, 0.35), new THREE.MeshBasicMaterial({ map: plate }), 0, 0.6, 0.502);
+    // Figure: a standing man in a jacket, holding a book (catalogue) in his left arm.
+    const y0 = 1.1;
+    for (const sd of [-1, 1]) {
+      add(new THREE.BoxGeometry(0.15, 0.09, 0.3), marble, sd * 0.11, y0 + 0.045, 0.04);           // shoe
+      add(new THREE.CylinderGeometry(0.105, 0.085, 0.88, 20), marble, sd * 0.105, y0 + 0.52, 0);   // trouser leg
+      add(new THREE.SphereGeometry(0.09, 20, 16), marble, sd * 0.25, y0 + 1.46, 0);               // shoulder
+    }
+    add(new THREE.CylinderGeometry(0.21, 0.215, 0.2, 28), marble, 0, y0 + 0.98, 0, 0, 0, 0, [1, 1, 0.7]); // hips
+    add(new THREE.CylinderGeometry(0.215, 0.235, 0.16, 28), marble, 0, y0 + 0.9, 0, 0, 0, 0, [1, 1, 0.68]); // jacket hem
+    const torso = new THREE.LatheGeometry([
+      new THREE.Vector2(0.2, 0), new THREE.Vector2(0.205, 0.12), new THREE.Vector2(0.23, 0.32),
+      new THREE.Vector2(0.27, 0.46), new THREE.Vector2(0.22, 0.53), new THREE.Vector2(0.07, 0.56), new THREE.Vector2(0, 0.56),
+    ], 32);
+    add(torso, marble, 0, y0 + 0.95, 0, 0, 0, 0, [1, 1, 0.62]);
+    // Jacket lapels and buttons on the chest.
+    for (const sd of [-1, 1]) add(new THREE.BoxGeometry(0.06, 0.3, 0.02), marble, sd * 0.07, y0 + 1.33, 0.16, 0.12, 0, sd * -0.35);
+    for (let i = 0; i < 2; i++) add(new THREE.SphereGeometry(0.014, 8, 8), marble, 0, y0 + 1.12 + i * 0.09, 0.15);
+    // Right arm hangs; left arm bends to hold the book.
+    add(new THREE.CylinderGeometry(0.066, 0.056, 0.34, 18), marble, 0.29, y0 + 1.29, 0, 0, 0, 0.08);
+    add(new THREE.CylinderGeometry(0.055, 0.045, 0.32, 18), marble, 0.31, y0 + 0.97, 0.01, 0, 0, 0.03);
+    add(new THREE.SphereGeometry(0.05, 14, 12), marble, 0.315, y0 + 0.79, 0.02, 0, 0, 0, [0.9, 1.2, 0.8]);
+    add(new THREE.CylinderGeometry(0.066, 0.056, 0.34, 18), marble, -0.29, y0 + 1.29, 0, 0, 0, -0.08);
+    add(new THREE.CylinderGeometry(0.055, 0.045, 0.3, 18), marble, -0.27, y0 + 1.13, 0.14, Math.PI / 2 - 0.25, 0, 0);
+    add(new THREE.SphereGeometry(0.05, 14, 12), marble, -0.24, y0 + 1.17, 0.29);
+    add(new THREE.BoxGeometry(0.06, 0.32, 0.24), marble, -0.19, y0 + 1.22, 0.24, 0, 0, 0.12);    // book
+    // Neck, head, hair, nose, ears.
+    add(new THREE.CylinderGeometry(0.058, 0.065, 0.12, 16), marble, 0, y0 + 1.56, 0);
+    add(new THREE.SphereGeometry(0.12, 28, 24), marble, 0, y0 + 1.73, 0.01, 0, 0, 0, [0.88, 1.08, 0.98]);
+    add(new THREE.SphereGeometry(0.124, 28, 16, 0, Math.PI * 2, 0, Math.PI * 0.52), marble, 0, y0 + 1.75, -0.01, -0.25, 0, 0, [0.92, 1.0, 1.02]);
+    add(new THREE.BoxGeometry(0.03, 0.05, 0.04), marble, 0, y0 + 1.72, 0.125, 0.2);
+    for (const sd of [-1, 1]) add(new THREE.SphereGeometry(0.03, 10, 8), marble, sd * 0.105, y0 + 1.72, 0, 0, 0, 0, [0.5, 1, 0.8]);
+    // Thin gold ring on the plinth cap.
+    add(new THREE.BoxGeometry(1.16, 0.02, 1.16), gold, 0, 1.0, 0);
+    statue.position.set(sx, 0, sz); statue.rotation.y = -Math.PI / 2; scene.add(statue);
+    const sLight = new THREE.PointLight('#ffe7b8', 16, 8, 1.5); sLight.position.set(sx - 2.2, 4.6, sz); scene.add(sLight);
+    obstacles.push({ x: sx, z: sz, r: 0.9 });
+
+    // Small "Curated by" panel on the wall above the statue, same look as the welcome wall.
+    const cur = canvasTex(1100, 480, (c, w, h) => {
+      c.fillStyle = '#1f1b17'; c.fillRect(0, 0, w, h);
+      c.strokeStyle = '#c8a24f'; c.lineWidth = 4; c.strokeRect(18, 18, w - 36, h - 36);
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillStyle = '#f3ead8'; c.font = '900 64px "Playfair Display", Georgia, serif'; c.fillText('Curated by', w / 2, 120);
+      c.fillStyle = '#e6cb84'; c.font = '700 76px "Playfair Display", Georgia, serif'; c.fillText(curator.name, w / 2, 250);
+      c.fillStyle = '#c8a24f'; c.font = '600 22px Inter, sans-serif'; c.fillText(site.school.toUpperCase(), w / 2, 370);
+    });
+    placeOnWall(new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.92), new THREE.MeshBasicMaterial({ map: cur })), 'lobby', 'east', sz, 4.6);
+  }
 }
 
 // ---------------------------------------------------------------------------
