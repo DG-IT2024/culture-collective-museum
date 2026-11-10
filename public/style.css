@@ -175,3 +175,4 @@ a.btn { display: inline-block; text-decoration: none; }
 #photo-img { display: block; width: 100%; border-radius: 8px; margin-top: 6px; }
 
 #btn-sound.on { border-color: var(--gold); color: var(--gold); }
+.btn.sound-toggle.on { border-color: var(--gold, #c9a45c); color: var(--gold, #c9a45c); }

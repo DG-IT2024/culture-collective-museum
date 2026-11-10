@@ -123,8 +123,7 @@ export function setEnabled(on) {
   try { localStorage.setItem('cc.sound', on ? '1' : '0'); } catch {}
   if (on) { ensure(); ac.resume(); }
   mix();
-  const b = document.getElementById('btn-sound');
-  if (b) { b.textContent = on ? 'Sound: on' : 'Sound: off'; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
+  for (const b of document.querySelectorAll('.sound-toggle')) { b.textContent = on ? 'Sound: on' : 'Sound: off'; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
 }
 export const isEnabled = () => enabled;
 export function wantsSound() { try { return localStorage.getItem('cc.sound') === '1'; } catch { return false; } }

@@ -216,6 +216,7 @@ teleport('lobby');
 
 $('btn-enter').onclick = () => { if (wantsSound()) setSound(true); play(); updateRoom(true); };
 $('btn-sound').onclick = () => setSound(!soundOn());
+$('btn-sound-pause').onclick = () => setSound(!soundOn());
 $('btn-resume').onclick = play;
 $('btn-map').onclick = () => { unlock(); setState('paused'); };
 // Smart glasses (2030): asked once on entering the room; the HUD button toggles them later.
