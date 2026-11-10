@@ -95,11 +95,11 @@ function ensure() {
   for (const n of ['gallery', 'past', 'present', 'future']) layers[n] = makeLayer(n);
   ac.onstatechange = () => document.dispatchEvent(new Event('cc-sound'));
   for (const [name, url] of Object.entries(TRACKS)) {
-    const m = music[name] = { gain: ac.createGain(), src: null };
+    const m = music[name] = { gain: ac.createGain(), buf: null, src: null };
     m.gain.gain.value = 0; m.gain.connect(master);
     fetch(url).then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status))
       .then(b => ac.decodeAudioData(b))
-      .then(buf => { const s = ac.createBufferSource(); s.buffer = buf; s.loop = true; s.connect(m.gain); s.start(); m.src = s; mix(); })
+      .then(buf => { m.buf = buf; mix(); })
       .catch(e => console.warn(`Music "${name}" unavailable:`, e));
   }
   // Event scheduler: looks ahead a little and schedules the active layer's sounds.
@@ -113,26 +113,63 @@ function ensure() {
   }, 80);
 }
 
+// Start a track from its first note (looping), unless it is already playing.
+function startTrack(m, at) {
+  if (m.src || !m.buf) return;
+  const s = ac.createBufferSource(); s.buffer = m.buf; s.loop = true; s.connect(m.gain); s.start(at); m.src = s;
+}
+function stopTrack(m, at) { if (!m.src) return; try { m.src.stop(at); } catch {} m.src = null; }
+
+let transitionUntil = 0; // while the Enter transition runs, mix() leaves the music alone
 function mix() {
   if (!ac) return;
   const t = ac.currentTime, active = LAYER_OF[room];
-  const track = enabled ? MUSIC_OF[room] : null, musicHere = !!music[track]?.src;
+  const track = enabled ? MUSIC_OF[room] : null, musicHere = !!music[track]?.buf;
   for (const [n, L] of Object.entries(layers)) {
     L.out.gain.cancelScheduledValues(t);
     const on = enabled && n === active && !(n === 'gallery' && musicHere); // the music replaces the lobby pad
     L.out.gain.setTargetAtTime(on ? LEVEL[n] : 0, t, 0.6);
   }
+  if (t < transitionUntil) return;
   for (const [name, m] of Object.entries(music)) {
     const on = name === track;
+    if (on) startTrack(m, t);
     m.gain.gain.cancelScheduledValues(t); m.gain.gain.setTargetAtTime(on ? MUSIC_LEVEL : 0, t, on ? 0.8 : 0.5);
   }
 }
 
-export function setRoom(id) { room = id || 'lobby'; mix(); }
+// A soft gallery chime: three bell-like notes rising (E5, B5, E6) with a shimmer.
+function chime(at) {
+  [[659.25, 0], [987.77, 0.18], [1318.51, 0.36]].forEach(([f, d]) => {
+    for (const [mul, amp] of [[1, 0.22], [2.76, 0.05], [5.4, 0.02]]) {
+      const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = f * mul;
+      const g = ac.createGain(); env(g, at + d, 0.008, amp, 2.6); o.connect(g); g.connect(master); o.start(at + d); o.stop(at + d + 2.8);
+    }
+  });
+}
 
-export function whoosh() {
+// Start screen -> lobby: the intro fades out, a chime and doorway whoosh play, then the lobby track starts from the top.
+function enterTransition() {
+  const t = ac.currentTime, intro = music.intro, lobby = music.lobby;
+  if (!lobby?.buf) return false;
+  transitionUntil = t + 2.4;
+  if (intro) { intro.gain.gain.cancelScheduledValues(t); intro.gain.gain.setValueAtTime(intro.gain.gain.value, t); intro.gain.gain.linearRampToValueAtTime(0, t + 1.5); stopTrack(intro, t + 1.6); }
+  chime(t + 1.2); whoosh(0.9);
+  stopTrack(lobby, t); lobby.gain.gain.cancelScheduledValues(t); lobby.gain.gain.setValueAtTime(0, t);
+  startTrack(lobby, t + 2.2);
+  lobby.gain.gain.setValueAtTime(0, t + 2.2); lobby.gain.gain.linearRampToValueAtTime(MUSIC_LEVEL, t + 3.6);
+  return true;
+}
+
+export function setRoom(id) {
+  const prev = room; room = id || 'lobby';
+  if (prev === 'start' && room === 'lobby' && enabled && ac && enterTransition()) { mix(); return; }
+  mix();
+}
+
+export function whoosh(delay = 0) {
   if (!enabled || !ac) return;
-  const t = ac.currentTime;
+  const t = ac.currentTime + delay;
   const n = ac.createBufferSource(); n.buffer = noise();
   const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.5;
   bp.frequency.setValueAtTime(180, t); bp.frequency.exponentialRampToValueAtTime(3200, t + 0.7); bp.frequency.exponentialRampToValueAtTime(400, t + 1.3);
@@ -150,7 +187,7 @@ export function setEnabled(on) {
 export const isEnabled = () => enabled;
 // Sound starts with the Enter click unless the visitor turned it off before.
 export function wantsSound() { try { return localStorage.getItem('cc.sound') !== '0'; } catch { return true; } }
-export const _debug = () => ({ ctx: ac?.state, room, enabled, gains: Object.fromEntries(Object.entries(layers).map(([n, L]) => [n, +L.out.gain.value.toFixed(3)])), music: Object.fromEntries(Object.entries(music).map(([n, m]) => [n, { loaded: !!m.src, gain: +m.gain.gain.value.toFixed(3) }])) });
+export const _debug = () => ({ ctx: ac?.state, room, enabled, gains: Object.fromEntries(Object.entries(layers).map(([n, L]) => [n, +L.out.gain.value.toFixed(3)])), music: Object.fromEntries(Object.entries(music).map(([n, m]) => [n, { loaded: !!m.buf, playing: !!m.src, gain: +m.gain.gain.value.toFixed(3) }])) });
 // Browsers keep audio suspended until the visitor interacts with the page; call this from any click/tap/key.
 export function resume() { if (enabled && ac && ac.state !== 'running') ac.resume(); }
 export const isBlocked = () => enabled && (!ac || ac.state !== 'running');
