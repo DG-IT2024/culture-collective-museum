@@ -133,13 +133,13 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - I'll check whether your Railway connector is available in this session. If not, you deploy from the Railway dashboard and I give you the steps.
 
 ## Phase 7 · QA pass (≈30 min)
-- [ ] Walk the full loop on a laptop (Chrome) and a phone (Android/iOS Safari)
-- [ ] All 45 exhibits open with the correct image, text, curator and credit
-- [ ] Posting, filtering and reporting work on the live site; posts survive a redeploy
-- [ ] Trivia ×3 → passport card downloads
-- [ ] Smart glasses + DIWA appear in 2030 and can be dismissed
-- [ ] Frame rate is OK on a mid-range phone (lower pixel ratio if needed)
-- [ ] The lobby and Affect walls read respectfully
+- [x] Walk the full loop on a laptop (Chrome) and a phone (Android/iOS Safari) — scripted walk + emulated phone OK; real phone still to try
+- [x] All 45 exhibits open with the correct image, text, curator and credit
+- [x] Posting, filtering and reporting work on the live site; posts survive a redeploy (fixed: rate limit/report-once now use X-Real-IP)
+- [x] Trivia ×3 → passport card downloads
+- [x] Smart glasses + DIWA appear in 2030 and can be dismissed
+- [ ] Frame rate is OK on a mid-range phone (60 fps emulated, pixel ratio capped at 1.25; needs a real phone)
+- [ ] The lobby and Affect walls read respectfully (group to review)
 
 ## If time runs short: cut in this order
 1. Sound (Phase 5)
