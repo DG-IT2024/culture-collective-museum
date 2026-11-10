@@ -100,7 +100,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - HUD: room name, crosshair and aim hint.
 - **Done when:** you can walk the whole loop on a laptop and a phone and open every exhibit.
 
-## Phase 2 · Era vibes (≈2 h) · makes it "feel like the era"
+## Phase 2 · Era vibes (≈2 h) · makes it "feel like the era" ✅ done
 - **2000s:** pastel gradient walls, sparkles/bubbles, checkered floor, chunky colorful frames, marquee, Friendster-styled Freedom Wall shell.
 - **Now:** white walls, TikTok pink/cyan neon, P-pop stage with LED strips and light sticks, TikTok-comment-styled wall shell.
 - **2030:** dark room, neon grid floor, particles, floating holo frames, central hologram. Smart-glasses prompt on entering → **DIWA** greeting + one line per exhibit wall (I draft the script for your approval).

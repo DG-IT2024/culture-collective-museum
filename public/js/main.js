@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { H, EYE, ROOMS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
+import { lookFor, SKY, frameStyle, labelTexture, decorateExhibit, eraBanner, decorate, onEnterRoom, glasses } from './vibes.js';
 
 const DATA = window.CC_DATA;
 const $ = id => document.getElementById(id);
@@ -33,30 +34,9 @@ export const clickables = [];
 export const animators = [];
 
 // ---------------------------------------------------------------------------
-// Room looks (neutral for Phase 1; era styling comes in Phase 2)
+// Room looks come from vibes.js (era surfaces, sky/fog per room).
 // ---------------------------------------------------------------------------
-const LOOK = {
-  lobby:     { wall: '#ebe3d4', floor: '#2b241f', ceil: '#f5efe4', bg: '#1c1916', fog: [14, 55] },
-  past:      { wall: '#c9dcf5', floor: '#e9f4fb', ceil: '#eef6ff', bg: '#9fc9ef', fog: [16, 60] },
-  present:   { wall: '#f4f3ef', floor: '#cdb497', ceil: '#ffffff', bg: '#e8e6e1', fog: [16, 60] },
-  future:    { wall: '#0d1326', floor: '#070a14', ceil: '#05070f', bg: '#04060d', fog: [10, 42] },
-  final:     { wall: '#24201c', floor: '#141210', ceil: '#191613', bg: '#120f0d', fog: [12, 50] },
-  corridorV: { wall: '#2e2823', floor: '#1b1714', ceil: '#221d19', bg: '#16120f', fog: [8, 30] },
-  corridorH: { wall: '#2e2823', floor: '#1b1714', ceil: '#221d19', bg: '#16120f', fog: [8, 30] },
-};
-buildShell(scene, id => {
-  const l = LOOK[id];
-  return {
-    wall: new THREE.MeshLambertMaterial({ color: l.wall }),
-    floor: new THREE.MeshLambertMaterial({ color: l.floor }),
-    ceil: new THREE.MeshBasicMaterial({ color: l.ceil }),
-  };
-});
-for (const r of ROOMS) {
-  if (r.corridor) continue;
-  const pl = new THREE.PointLight('#fff4e2', 55, 45, 1.3);
-  pl.position.set((r.x0 + r.x1) / 2, H - 0.6, (r.z0 + r.z1) / 2); scene.add(pl);
-}
+buildShell(scene, lookFor);
 
 // ---------------------------------------------------------------------------
 // Exhibits
@@ -70,31 +50,21 @@ function progress() {
   if (loadedCount >= toLoad) $('btn-enter').disabled = false;
 }
 
-function labelTexture(item, aspect, roomId) {
-  return canvasTex(600, 210, (c, w, h) => {
-    c.fillStyle = '#fbf8f2'; c.fillRect(0, 0, w, h);
-    c.fillStyle = '#c8a24f'; c.fillRect(0, 0, 8, h);
-    c.textBaseline = 'top';
-    c.fillStyle = '#8a7a5c'; c.font = '600 19px Inter, sans-serif';
-    c.fillText(((item.year ? item.year + '  ·  ' : '') + aspect.label).toUpperCase(), 30, 22);
-    c.fillStyle = '#1b1814'; c.font = '700 34px "Playfair Display", Georgia, serif';
-    wrapLines(c, item.title, w - 60, 2).forEach((l, i) => c.fillText(l, 30, 56 + i * 42));
-    c.fillStyle = '#8a7a5c'; c.font = '500 17px Inter, sans-serif';
-    c.fillText(isTouch ? 'Tap to read more' : 'Press E or click to read more', 30, h - 34);
-  });
-}
-
 function addExhibit(room, aspect, item, idx, slot) {
   const along = slot.along[idx];
-  const { pos, rotY } = wallPoint(room.id, slot.side, along, 2.85);
+  const style = frameStyle(room.id, aspect.key, idx);
+  const { pos, rotY } = wallPoint(room.id, slot.side, along, 2.85, style.out || 0.12);
   const g = new THREE.Group();
   g.position.copy(pos); g.rotation.y = rotY; scene.add(g);
 
-  const frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.08), new THREE.MeshStandardMaterial({ color: '#2a2622', roughness: 0.6 }));
+  const frameMat = style.holo
+    ? new THREE.MeshBasicMaterial({ color: style.color, transparent: true, opacity: 0.85 })
+    : new THREE.MeshStandardMaterial({ color: style.color, roughness: style.rough, metalness: style.metal });
+  const frame = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 0.08), frameMat);
   frame.position.z = 0.0; g.add(frame);
   const pic = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ color: '#444' }));
   pic.position.z = 0.05; g.add(pic);
-  const label = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 0.51), new THREE.MeshBasicMaterial({ map: labelTexture(item, aspect, room.id) }));
+  const label = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 0.51), new THREE.MeshBasicMaterial({ map: labelTexture(room.id, item, aspect, isTouch) }));
   label.position.set(0, -1.6, 0.03); g.add(label);
 
   const ex = { room, aspect, item, idx, group: g, frame, pic, label, tex: null };
@@ -109,9 +79,10 @@ function addExhibit(room, aspect, item, idx, slot) {
     if (h > slot.maxH) { h = slot.maxH; w = h * a; }
     pic.material = new THREE.MeshBasicMaterial({ map: tex });
     pic.scale.set(w, h, 1);
-    frame.scale.set(w + 0.24, h + 0.24, 1);
+    frame.scale.set(w + style.border * 2, h + style.border * 2, 1);
     label.position.y = -h / 2 - 0.5;
     ex.tex = tex; ex.size = { w, h };
+    decorateExhibit(ex, style);
     loadedCount++; progress();
   }, undefined, () => { loadedCount++; progress(); });
 }
@@ -138,27 +109,17 @@ function placeOnWall(mesh, roomId, side, along, y, out = 0.06) {
 for (const room of DATA.rooms) {
   const slots = SLOTS[room.id];
   room.aspects.forEach(aspect => aspect.items.forEach((item, idx) => addExhibit(room, aspect, item, idx, slots[aspect.key])));
-  // Aspect headings above each wall.
-  room.aspects.forEach(aspect => {
-    const s = slots[aspect.key];
-    const mid = (Math.min(...s.along) + Math.max(...s.along)) / 2;
-    const isBack = aspect.key === 'performance';
-    const b = banner(aspect.label, null, isBack ? 6.5 : 8, 0.8, { px: 140 });
-    placeOnWall(b, room.id, s.side, isBack && room.id === 'past' ? 5.6 : mid, 5.2);
-  });
 }
 progress();
 
 // Room title signs above each doorway, seen as you approach.
 [
-  ['lobby', 'north', 13, '2000–2010', 'Room 1 · Then'],
-  ['past', 'north', 13, '2025–2026', 'Room 2 · Now'],
-  ['present', 'east', 3, '2030', 'Room 3 · Next'],
-  ['future', 'south', 49, 'Final Room', 'Then · Now · Next'],
-  ['final', 'south', 39, 'Exit', 'Back to the lobby'],
-].forEach(([room, side, along, t, s]) => {
-  const b = banner(t, s, 3.8, 1.1, { px: 160 });
-  placeOnWall(b, room, side, along, 4.85, 0.03);
+  ['lobby', 'north', 13, '2000–2010', 'Room 1 · Then', 'past'],
+  ['past', 'north', 13, '2025–2026', 'Room 2 · Now', 'present'],
+  ['present', 'east', 3, '2030', 'Room 3 · Next', 'future'],
+  ['future', 'south', 49, 'Final Room', 'Then · Now · Next', 'lobby'],
+].forEach(([room, side, along, t, s, style]) => {
+  placeOnWall(eraBanner(style, t, s, 3.8, 1.1, 160), room, side, along, 4.85, 0.04);
 });
 
 // ---------------------------------------------------------------------------
@@ -227,14 +188,6 @@ progress();
   placeOnWall(cw, 'lobby', 'east', 82, 3.3);
 }
 
-// Simple placeholders for rooms finished in Phase 2.
-{
-  const f = banner('Then · Now · Next', 'Final room · coming in Phase 2', 8, 1.6);
-  placeOnWall(f, 'final', 'east', 45, 3);
-  const c = banner('Salamat sa pagbisita!', 'Credits corridor', 5.4, 1.2);
-  placeOnWall(c, 'corridorH', 'south', 34, 3);
-}
-
 // ---------------------------------------------------------------------------
 // UI state, cards, map
 // ---------------------------------------------------------------------------
@@ -247,6 +200,7 @@ function setState(s) {
   $('start').classList.toggle('hidden', s !== 'start');
   $('pause').classList.toggle('hidden', s !== 'paused');
   $('cardwrap').classList.toggle('hidden', s !== 'card');
+  $('glasses-prompt').classList.toggle('hidden', s !== 'glasses');
   $('hud').classList.toggle('hidden', s === 'start');
   $('joy').classList.toggle('hidden', !(s === 'playing' && isTouch));
   $('lookhint').classList.toggle('hidden', !(s === 'playing' && isTouch));
@@ -263,6 +217,12 @@ teleport('lobby');
 $('btn-enter').onclick = () => { play(); updateRoom(true); };
 $('btn-resume').onclick = play;
 $('btn-map').onclick = () => { unlock(); setState('paused'); };
+// Smart glasses (2030): asked once on entering the room; the HUD button toggles them later.
+$('glasses-yes').onclick = () => { glasses.set(true); play(); };
+$('glasses-no').onclick = () => { glasses.set(false); play(); };
+$('btn-glasses').onclick = () => glasses.set(!glasses.on);
+const ui = { modal(name) { unlock(); setState(name); } };
+
 document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && state === 'playing' && !isTouch) setState('paused'); });
 
 for (const id of ['lobby', 'past', 'present', 'future', 'final']) {
@@ -380,9 +340,12 @@ function toast(t1, t2) {
 function updateRoom(force) {
   const r = roomAt(camera.position.x, camera.position.z);
   if (!r || (r.name === currentRoom?.name && !force)) { if (r) currentRoom = r; return; }
+  const prev = currentRoom;
   currentRoom = r;
   $('room').innerHTML = `<b>${r.name}</b><span>${r.sub}</span>`;
-  toast(r.id === 'lobby' ? 'Culture Collective' : r.name, r.sub);
+  $('btn-glasses').classList.toggle('hidden', r.id !== 'future');
+  if (['past', 'present', 'future', 'final'].includes(r.id)) { if (prev?.id !== r.id) onEnterRoom(r.id); }
+  else toast(r.id === 'lobby' ? 'Culture Collective' : r.name, r.sub);
 }
 
 let target = null;
@@ -411,8 +374,9 @@ renderer.setAnimationLoop(() => {
   }
   camera.rotation.set(pitch, yaw, 0);
 
-  const look = LOOK[currentRoom?.id || 'lobby'];
+  const look = SKY[currentRoom?.id || 'lobby'];
   bgTo.set(look.bg);
+  hemi.intensity += (look.hemi - hemi.intensity) * Math.min(1, dt * 2.5);
   const k2 = Math.min(1, dt * 2.5);
   scene.background.lerp(bgTo, k2); scene.fog.color.copy(scene.background);
   scene.fog.near += (look.fog[0] - scene.fog.near) * k2; scene.fog.far += (look.fog[1] - scene.fog.far) * k2;
@@ -429,6 +393,8 @@ renderer.setAnimationLoop(() => {
   renderer.render(scene, camera);
 });
 
+decorate({ scene, animators, clickables, camera, ui });
+
 if (isTouch) { $('controls-desktop').classList.add('hidden'); $('controls-touch').classList.remove('hidden'); }
 setState('start');
-window.__cc = { camera, teleport, exhibits, setYaw: v => { yaw = v; }, setPitch: v => { pitch = v; }, renderer, scene, openCard, get state() { return state; } };
+window.__cc = { camera, teleport, exhibits, setYaw: v => { yaw = v; }, setPitch: v => { pitch = v; }, renderer, scene, openCard, glasses, get state() { return state; } };

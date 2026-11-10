@@ -7,7 +7,7 @@
 <meta name="description" content="Culture Collective: a walk-through digital museum of Philippine popular culture, 2000–2010, today and 2030.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;800&family=Playfair+Display:ital,wght@0,700;0,900;1,900&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,21 @@
   <div id="crosshair"></div>
   <div id="hint" class="hidden"></div>
   <div id="toast"><div class="t1"></div><div class="t2"></div></div>
-  <div id="tools"><button id="btn-map" type="button">Map</button></div>
+  <div id="tools"><button id="btn-glasses" class="hidden" type="button">Smart glasses</button><button id="btn-map" type="button">Map</button></div>
+</div>
+<div id="warp" aria-live="polite"><div class="w1"></div><div class="w2"></div></div>
+<div id="glasses" class="hidden" aria-live="polite">
+  <div class="lens"></div>
+  <div class="hudtag">DIWA · AR GUIDE ONLINE</div>
+  <div id="diwa"><b>DIWA</b><p id="diwa-text"></p></div>
+</div>
+<div id="glasses-prompt" class="overlay hidden">
+  <div class="panel glasses-panel">
+    <p class="kicker">Room 3 · 2030</p>
+    <h2>Wear the smart glasses?</h2>
+    <p>Put on the 2030 smart glasses and <b>DIWA</b>, your AI guide, will show you around this room. You can take them off anytime with the "Smart glasses" button.</p>
+    <div class="row"><button class="btn" id="glasses-yes" type="button">Wear them</button><button class="btn ghost" id="glasses-no" type="button">No thanks</button></div>
+  </div>
 </div>
 <div id="joy" class="hidden"><i></i></div>
 <div id="lookhint" class="hidden">Drag to look · Tap an artwork</div>
@@ -67,7 +81,7 @@
   // Canvas labels need the web fonts loaded before they are drawn.
   try {
     await Promise.race([
-      Promise.all(['900 40px "Playfair Display"', '700 40px "Playfair Display"', '400 20px Inter', '600 20px Inter', '700 20px Inter'].map(f => document.fonts.load(f))),
+      Promise.all(['900 40px "Playfair Display"', '700 40px "Playfair Display"', '400 20px Inter', '600 20px Inter', '700 20px Inter', '800 20px Inter', '30px Bungee', '26px VT323', '800 20px Orbitron', '500 20px Orbitron', 'italic 900 40px "Playfair Display"'].map(f => document.fonts.load(f))),
       new Promise(r => setTimeout(r, 2500)),
     ]);
   } catch {}

@@ -118,8 +118,10 @@ const WALK = [
     : { x0: d.at - 1, x1: d.at + 1, z0: d.c - d.w / 2 + R, z1: d.c + d.w / 2 - R }),
 ];
 export const obstacles = []; // circles {x, z, r}
+export const blocks = [];    // rectangles {x0, x1, z0, z1} (stages, desks)
 
 function walkable(x, z) {
+  if (blocks.some(b => x > b.x0 - R && x < b.x1 + R && z > b.z0 - R && z < b.z1 + R)) return false;
   return WALK.some(a => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1);
 }
 
@@ -151,17 +153,17 @@ export function roomAt(x, z) {
 export const SLOTS = {
   past: {      // entered from the south, facing north
     affect:      { side: 'west',  along: [54, 49.5, 45, 40.5, 36], maxW: 3.0, maxH: 2.3 },
-    body:        { side: 'east',  along: [54, 49.5, 45, 40.5, 36], maxW: 3.0, maxH: 2.3 },
+    body:        { side: 'east',  along: [55.5, 51.4, 47.3, 43.2, 39.1], maxW: 2.9, maxH: 2.3 },
     performance: { side: 'north', along: [2.4, 5.6, 8.8, 17.2, 20.4], maxW: 2.5, maxH: 2.1 },
   },
   present: {   // entered from the south, facing north; exit on the east wall near the north corner
     affect:      { side: 'west',  along: [26, 21.5, 17, 12.5, 8], maxW: 3.0, maxH: 2.3 },
-    body:        { side: 'east',  along: [26, 21.5, 17, 12.5, 8.5], maxW: 3.0, maxH: 2.3 },
+    body:        { side: 'east',  along: [28, 24.25, 20.5, 16.75, 13], maxW: 2.6, maxH: 2.3 },
     performance: { side: 'north', along: [3.5, 8.25, 13, 17.75, 22.5], maxW: 3.2, maxH: 2.3 },
   },
   future: {    // entered from the west, facing east; exit on the south wall near the east corner
     affect:      { side: 'north', along: [31, 35.5, 40, 44.5, 49], maxW: 3.0, maxH: 2.3 },
-    body:        { side: 'south', along: [29.5, 33, 36.5, 40, 43.5], maxW: 2.7, maxH: 2.2 },
+    body:        { side: 'south', along: [28.6, 31.8, 35, 38.2, 41.4], maxW: 2.5, maxH: 2.2 },
     performance: { side: 'east',  along: [4, 9.5, 15, 20.5, 26], maxW: 3.6, maxH: 2.4 },
   },
 };
