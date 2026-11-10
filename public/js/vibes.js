@@ -609,7 +609,7 @@ const diwa = {
     this.on = on;
     document.getElementById('glasses').classList.toggle('hidden', !on);
     document.getElementById('btn-glasses').classList.toggle('on', on);
-    if (on) { this.said.clear(); this.say('greet'); }
+    if (on) { this.said.clear(); this._t = 0; this.say('greet'); }
   },
   say(key) {
     if (!this.on || this.said.has(key)) return;

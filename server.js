@@ -46,7 +46,6 @@ app.get('/api/posts', async (req, res) => {
 });
 
 app.post('/api/posts', json, async (req, res) => {
-  console.log('ipdbg', JSON.stringify({ ip: req.ip, xff: req.get('x-forwarded-for'), real: req.get('x-real-ip') }));
   const v = validate(req.body);
   if (v.error) return res.status(400).json({ error: v.error });
   if (rateLimited(clientIp(req))) return res.status(429).json({ error: 'Slow down a little. Try again in a minute.' });
