@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Deploy the committed code to Railway (project "culture-collective", service "web").
-# Uploads a clean `git archive` of HEAD, because the home-folder .gitignore above this repo
-# breaks `railway up`'s ignore-file parsing. Commit your changes first.
+# Fallback deploy: Railway now auto-deploys every push to GitHub `main`, so normally just `git push`.
+# This script uploads a clean `git archive` of HEAD straight from this computer (bypasses GitHub),
+# because the home-folder .gitignore above this repo breaks `railway up`'s ignore-file parsing.
 #   Usage (Git Bash):  bash scripts/deploy.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
