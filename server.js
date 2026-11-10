@@ -62,7 +62,8 @@ app.post('/api/posts/:id/report', async (req, res) => {
 // Local development only: save a canvas screenshot (data URL) to the OS temp folder for visual checks.
 app.post('/__dev/shot', express.json({ limit: '15mb' }), async (req, res) => {
   const local = ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress);
-  if (!local || process.env.RAILWAY_ENVIRONMENT) return res.status(404).end();
+  const onRailway = process.env.RAILWAY_ENVIRONMENT_NAME || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID;
+  if (!local || onRailway) return res.status(404).end();
   const { name = 'shot', data = '' } = req.body || {};
   const fs = await import('node:fs/promises'); const os = await import('node:os');
   const dir = path.join(os.tmpdir(), 'cc-shots'); await fs.mkdir(dir, { recursive: true });
