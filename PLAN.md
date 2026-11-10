@@ -121,7 +121,7 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 - Photo button: saves the current view with a Culture Collective frame/watermark.
 - **Done when:** a full visit ends with a downloadable passport card.
 
-## Phase 5 · Sound (≈30 min)
+## Phase 5 · Sound (≈30 min) ✅ done
 - Web Audio ambience per room, made in code: Nokia-ish chirps + dial-up texture (2000s), soft crowd/beat hum (Now), synth drone (2030), a whoosh on time-warp doorways. A mute toggle, off by default.
 
 ## Phase 6 · Deploy to Railway (≈30 min)

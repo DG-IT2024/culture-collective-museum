@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { H, EYE, ROOMS, SPAWNS, buildShell, wallPoint, moveWithCollision, roomAt, obstacles, SLOTS } from './world.js';
 import { canvasTex, wrapLines, roundRect } from './util.js';
+import { setRoom as setSoundRoom, whoosh, setEnabled as setSound, isEnabled as soundOn, wantsSound } from './audio.js';
 import { initExtras, openTrivia, openPassport, takePhoto } from './extras.js';
 import { initFreedom, open as openWall, refresh as refreshWall } from './freedom.js';
 import { lookFor, SKY, frameStyle, labelTexture, decorateExhibit, eraBanner, decorate, onEnterRoom, glasses } from './vibes.js';
@@ -213,7 +214,8 @@ function play() { setState('playing'); lock(); }
 function teleport(id) { const s = SPAWNS[id]; camera.position.set(s.x, EYE, s.z); yaw = s.yaw; pitch = 0; }
 teleport('lobby');
 
-$('btn-enter').onclick = () => { play(); updateRoom(true); };
+$('btn-enter').onclick = () => { if (wantsSound()) setSound(true); play(); updateRoom(true); };
+$('btn-sound').onclick = () => setSound(!soundOn());
 $('btn-resume').onclick = play;
 $('btn-map').onclick = () => { unlock(); setState('paused'); };
 // Smart glasses (2030): asked once on entering the room; the HUD button toggles them later.
@@ -346,6 +348,8 @@ function updateRoom(force) {
   const prev = currentRoom;
   currentRoom = r;
   $('room').innerHTML = `<b>${r.name}</b><span>${r.sub}</span>`;
+  setSoundRoom(r.id);
+  if (['past', 'present', 'future', 'final'].includes(r.id) && prev?.id !== r.id && prev) whoosh();
   $('btn-glasses').classList.toggle('hidden', r.id !== 'future');
   if (['past', 'present', 'future', 'final'].includes(r.id)) { if (prev?.id !== r.id) { onEnterRoom(r.id); if (r.id !== 'final') refreshWall(r.id); } }
   else toast(r.id === 'lobby' ? 'Culture Collective' : r.name, r.sub);
