@@ -15,6 +15,7 @@ export const H = 6.5;
 export const EYE = 1.7;
 export const DOOR_H = 4.2;
 export const R = 0.35; // visitor radius
+export const WALL_T = 0.3; // wall thickness: each room's wall face sits WALL_T/2 inside its boundary
 
 export const ROOMS = [
   { id: 'lobby',     name: 'Lobby',            sub: 'Culture Collective',  x0: 0,  x1: 26, z0: 60, z1: 90 },
@@ -88,12 +89,30 @@ export function buildShell(scene, look) {
         if (mat.map) { mat.map = mat.map.clone(); mat.map.needsUpdate = true; mat.map.repeat.set(len / (m.wallRepeat || 6), ht / H); }
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(len, ht), mat);
         const mid = (p.a + p.b) / 2, y = (p.y0 + p.y1) / 2;
-        const inset = 0.01;
+        const inset = WALL_T / 2;
         if (wall.axis === 'z') mesh.position.set(mid, y, wall.at + wall.normal[1] * inset);
         else mesh.position.set(wall.at + wall.normal[0] * inset, y, mid);
         mesh.rotation.y = Math.atan2(wall.normal[0], wall.normal[1]);
         scene.add(mesh);
       }
+    }
+  }
+  // Door frames: side posts (and a header on lintel doors) through the wall's thickness, so openings show depth.
+  const frameMat = new THREE.MeshStandardMaterial({ color: '#3a322b', roughness: 0.55, metalness: 0.1 });
+  const POST = 0.12, DEPTH = WALL_T + 0.06;
+  for (const d of DOORS) {
+    const top = d.open ? H : DOOR_H;
+    const along = (a, y, z) => d.axis === 'z' ? [a, y, z] : [z, y, a];
+    const size = (a, y, z) => d.axis === 'z' ? [a, y, z] : [z, y, a];
+    for (const sgn of [-1, 1]) {
+      const post = new THREE.Mesh(new THREE.BoxGeometry(...size(POST, top, DEPTH)), frameMat);
+      post.position.set(...along(d.c + sgn * (d.w / 2 - POST / 2), top / 2, d.at));
+      scene.add(post);
+    }
+    if (!d.open) {
+      const head = new THREE.Mesh(new THREE.BoxGeometry(...size(d.w, POST, DEPTH)), frameMat);
+      head.position.set(...along(d.c, DOOR_H - POST / 2, d.at));
+      scene.add(head);
     }
   }
 }
@@ -102,6 +121,7 @@ export function buildShell(scene, look) {
 export function wallPoint(roomId, side, along, y, out = 0.12) {
   const r = roomById[roomId];
   const wall = roomWalls(r).find(w => w.side === side);
+  out += WALL_T / 2; // measured from the wall's face, not the room boundary
   const pos = wall.axis === 'z'
     ? new THREE.Vector3(along, y, wall.at + wall.normal[1] * out)
     : new THREE.Vector3(wall.at + wall.normal[0] * out, y, along);
@@ -112,10 +132,10 @@ export function wallPoint(roomId, side, along, y, out = 0.12) {
 // Walkable areas and collision
 // ---------------------------------------------------------------------------
 const WALK = [
-  ...ROOMS.map(r => ({ x0: r.x0 + R, x1: r.x1 - R, z0: r.z0 + R, z1: r.z1 - R })),
-  ...DOORS.map(d => d.axis === 'z'
-    ? { x0: d.c - d.w / 2 + R, x1: d.c + d.w / 2 - R, z0: d.at - 1, z1: d.at + 1 }
-    : { x0: d.at - 1, x1: d.at + 1, z0: d.c - d.w / 2 + R, z1: d.c + d.w / 2 - R }),
+  ...ROOMS.map(r => { const m = R + WALL_T / 2; return { x0: r.x0 + m, x1: r.x1 - m, z0: r.z0 + m, z1: r.z1 - m }; }),
+  ...DOORS.map(d => { const m = R + 0.12; return d.axis === 'z'
+    ? { x0: d.c - d.w / 2 + m, x1: d.c + d.w / 2 - m, z0: d.at - 1, z1: d.at + 1 }
+    : { x0: d.at - 1, x1: d.at + 1, z0: d.c - d.w / 2 + m, z1: d.c + d.w / 2 - m }; }),
 ];
 export const obstacles = []; // circles {x, z, r}
 export const blocks = [];    // rectangles {x0, x1, z0, z1} (stages, desks)

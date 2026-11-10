@@ -133,7 +133,7 @@ export function frameStyle(roomId, aspectKey, idx) {
 }
 
 export function labelTexture(roomId, item, aspect, touch) {
-  const hint = touch ? 'Tap to read more' : 'Press E or click to read more';
+  const hint = touch ? 'Tap to read more' : 'Click to read more';
   return canvasTex(600, 210, (c, w, h) => {
     const top = ((item.year ? item.year + '  ·  ' : '') + aspect.label).toUpperCase();
     if (aspect.key === 'affect') {

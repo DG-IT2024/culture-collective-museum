@@ -82,7 +82,7 @@ app.post('/__dev/shot', express.json({ limit: '15mb' }), async (req, res) => {
 app.use(express.static(path.join(__dirname, 'public'), {
   extensions: ['html'],
   setHeaders(res, filePath) {
-    if (/\.(jpe?g|png|webp)$/i.test(filePath)) res.setHeader('Cache-Control', 'public, max-age=86400');
+    if (/\.(jpe?g|png|webp|mp3)$/i.test(filePath)) res.setHeader('Cache-Control', 'public, max-age=86400');
     else res.setHeader('Cache-Control', 'no-cache');
   },
 }));
