@@ -124,7 +124,9 @@ Run locally: `cd culture-collective && npm install && npm start` → http://loca
 ## Phase 5 · Sound (≈30 min) ✅ done
 - Web Audio ambience per room, made in code: Nokia-ish chirps + dial-up texture (2000s), soft crowd/beat hum (Now), synth drone (2030), a whoosh on time-warp doorways. A mute toggle, off by default.
 
-## Phase 6 · Deploy to Railway (≈30 min)
+## Phase 6 · Deploy to Railway (≈30 min) ✅ deployed
+**Live:** https://web-production-563d3.up.railway.app · Railway project `culture-collective` (services `web` + `Postgres`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`). Redeploy after committing: `bash scripts/deploy.sh` (not linked to GitHub auto-deploy).
+
 - Create the Railway project, add **Postgres**, deploy the app (start command `npm start`, `DATABASE_URL` linked), and create the table on boot.
 - Test the public URL on a laptop and a phone.
 - Put the link in the workbook (Phase 3 tab, cell **A16** "Link to the Digital Museum:"). I'll ask before editing the workbook.
