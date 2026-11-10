@@ -2,6 +2,7 @@
 // Starts with the Enter click (unless turned off before). Each room has its own layer; layers crossfade.
 //   start screen: ElevenLabs intro music (assets/audio/intro.mp3, take 1)
 //   lobby: ElevenLabs lounge music (assets/audio/lobby.mp3, take 3)
+//   era rooms: a soft ElevenLabs music bed (past/present/future.mp3) under each room's effects
 //   lobby / final / corridor: warm gallery pad
 //   2000s: phone-style beep melodies + a soft dial-up modem texture
 //   Now: muffled concert beat heard "through the wall"
@@ -11,8 +12,12 @@
 let ac = null, master = null, noiseBuf = null, enabled = false, room = 'start';
 // ElevenLabs music (OPM-inspired lounge): each track is decoded once and looped gaplessly.
 // 'intro' plays on the start screen, 'lobby' in the lobby; they crossfade, and fade out in other rooms.
-const TRACKS = { intro: 'assets/audio/intro.mp3', lobby: 'assets/audio/lobby.mp3' };
-const MUSIC_OF = { start: 'intro', lobby: 'lobby' }, MUSIC_LEVEL = 0.75;
+const TRACKS = { intro: 'assets/audio/intro.mp3', lobby: 'assets/audio/lobby.mp3',
+  past: 'assets/audio/past.mp3', present: 'assets/audio/present.mp3', future: 'assets/audio/future.mp3' };
+const MUSIC_OF = { start: 'intro', lobby: 'lobby', past: 'past', present: 'present', future: 'future' };
+// Lobby/intro music is the main sound; era-room music is a soft bed under that room's effects.
+const TRACK_LEVEL = { intro: 0.75, lobby: 0.75, past: 0.32, present: 0.3, future: 0.32 };
+const NEXT_ROOM = { start: 'lobby', lobby: 'past', past: 'present', present: 'future' }; // prefetch the next room's music
 const music = {}; // name -> { gain, src }
 const layers = {};
 const LAYER_OF = { start: null, lobby: 'gallery', final: 'gallery', corridorV: 'gallery', corridorH: 'gallery', past: 'past', present: 'present', future: 'future' };
@@ -94,14 +99,8 @@ function ensure() {
   const comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(ac.destination);
   for (const n of ['gallery', 'past', 'present', 'future']) layers[n] = makeLayer(n);
   ac.onstatechange = () => document.dispatchEvent(new Event('cc-sound'));
-  for (const [name, url] of Object.entries(TRACKS)) {
-    const m = music[name] = { gain: ac.createGain(), buf: null, src: null };
-    m.gain.gain.value = 0; m.gain.connect(master);
-    fetch(url).then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status))
-      .then(b => ac.decodeAudioData(b))
-      .then(buf => { m.buf = buf; mix(); })
-      .catch(e => console.warn(`Music "${name}" unavailable:`, e));
-  }
+  for (const name of Object.keys(TRACKS)) { const m = music[name] = { gain: ac.createGain(), buf: null, src: null, loading: false }; m.gain.gain.value = 0; m.gain.connect(master); }
+  loadTrack('intro'); loadTrack('lobby');
   // Event scheduler: looks ahead a little and schedules the active layer's sounds.
   setInterval(() => {
     if (!enabled) return;
@@ -111,6 +110,17 @@ function ensure() {
     if (L.nextEvent < now) L.nextEvent = now + 0.05;
     while (L.nextEvent < now + 0.25) L.nextEvent += L.event(L.nextEvent);
   }, 80);
+}
+
+// Tracks load on demand (plus the next room's), so phones don't download every song up front.
+function loadTrack(name) {
+  const m = music[name];
+  if (!m || m.buf || m.loading) return;
+  m.loading = true;
+  fetch(TRACKS[name]).then(r => r.ok ? r.arrayBuffer() : Promise.reject(r.status))
+    .then(b => ac.decodeAudioData(b))
+    .then(buf => { m.buf = buf; mix(); })
+    .catch(e => { m.loading = false; console.warn(`Music "${name}" unavailable:`, e); });
 }
 
 // Start a track from its first note (looping), unless it is already playing.
@@ -124,7 +134,8 @@ let transitionUntil = 0; // while the Enter transition runs, mix() leaves the mu
 function mix() {
   if (!ac) return;
   const t = ac.currentTime, active = LAYER_OF[room];
-  const track = enabled ? MUSIC_OF[room] : null, musicHere = !!music[track]?.buf;
+  const track = enabled ? MUSIC_OF[room] : null, musicHere = room === 'lobby' && !!music[track]?.buf;
+  if (enabled) { if (track) loadTrack(track); if (NEXT_ROOM[room]) loadTrack(MUSIC_OF[NEXT_ROOM[room]]); }
   for (const [n, L] of Object.entries(layers)) {
     L.out.gain.cancelScheduledValues(t);
     const on = enabled && n === active && !(n === 'gallery' && musicHere); // the music replaces the lobby pad
@@ -134,7 +145,7 @@ function mix() {
   for (const [name, m] of Object.entries(music)) {
     const on = name === track;
     if (on) startTrack(m, t);
-    m.gain.gain.cancelScheduledValues(t); m.gain.gain.setTargetAtTime(on ? MUSIC_LEVEL : 0, t, on ? 0.8 : 0.5);
+    m.gain.gain.cancelScheduledValues(t); m.gain.gain.setTargetAtTime(on ? TRACK_LEVEL[name] : 0, t, on ? 0.8 : 0.5);
   }
 }
 
@@ -157,7 +168,7 @@ function enterTransition() {
   chime(t + 1.2); whoosh(0.9);
   stopTrack(lobby, t); lobby.gain.gain.cancelScheduledValues(t); lobby.gain.gain.setValueAtTime(0, t);
   startTrack(lobby, t + 2.2);
-  lobby.gain.gain.setValueAtTime(0, t + 2.2); lobby.gain.gain.linearRampToValueAtTime(MUSIC_LEVEL, t + 3.6);
+  lobby.gain.gain.setValueAtTime(0, t + 2.2); lobby.gain.gain.linearRampToValueAtTime(TRACK_LEVEL.lobby, t + 3.6);
   return true;
 }
 
